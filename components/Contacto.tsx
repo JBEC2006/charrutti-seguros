@@ -98,19 +98,19 @@ export function Contacto() {
             <Dato etiqueta="Atención">
               <p>{site.horarios}</p>
             </Dato>
+
+            {/* El mapa cierra esta columna. El formulario de al lado es unos
+                300px más alto, así que sin esto quedaba un hueco muerto justo
+                acá abajo. Además, en una columna angosta la tarjeta se llena
+                con su propio contenido en vez de dejar trama vacía. */}
+            <div className="mt-8">
+              <Mapa />
+            </div>
           </div>
 
           <div className="min-w-0 lg:col-span-7">
             <ContactForm />
           </div>
-        </div>
-
-        {/* El mapa va debajo, a todo el ancho del contenedor, no dentro de la
-            columna de datos: ahí quedaba una caja alta y vacía al lado del
-            formulario. Antes vivía afuera de este contenedor, a sangre —por
-            eso se veía como un cartel gris suelto en vez de parte del diseño. */}
-        <div className="mt-10">
-          <Mapa />
         </div>
       </div>
     </section>
