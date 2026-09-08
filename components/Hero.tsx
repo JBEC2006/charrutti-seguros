@@ -34,10 +34,14 @@ export function Hero() {
                 corredores que hoy rankean puede mostrar: 25 años y una
                 certificación de calidad. En un rubro donde Google mide
                 experiencia y solvencia, ese es el activo de Charrutti. */}
+            {/* Decía "las nueve compañías del mercado". El BCU tiene diecisiete
+                aseguradoras autorizadas: nueve son las que trabaja Charrutti,
+                no las que hay. La frase exacta está en `respaldo`, en
+                lib/site.ts, con el razonamiento completo. */}
             <p className="max-w-[40ch] text-lg leading-[1.55]">
               Más de 25 años en plaza y certificación UNIT-ISO 9001. Cotizamos
-              en las nueve compañías del mercado y le recomendamos el seguro
-              justo, sin sobredimensionar sus necesidades.
+              en las nueve compañías con las que trabajamos y le recomendamos el
+              seguro justo, sin sobredimensionar sus necesidades.
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">

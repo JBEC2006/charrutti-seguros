@@ -21,9 +21,13 @@ import { site, ramos, hrefConsulta } from "@/lib/site";
 /* Marca efímera para saber que el clic en "Inicio" vino de otra página. */
 const MARCA_INICIO = "charrutti:ir-al-inicio";
 
+/* "En caso de siniestro" apuntaba a /#siniestro, la franja de la home, porque
+   era todo lo que existía. Ahora hay página propia con los nueve pasos y los
+   teléfonos de las nueve compañías, así que el ítem de nav lleva ahí. La
+   franja de la home se queda: resuelve la llamada urgente sin navegar. */
 const nav = [
   { label: "Inicio", href: "/" },
-  { label: "En caso de siniestro", href: "/#siniestro" },
+  { label: "En caso de siniestro", href: "/siniestro" },
   { label: "Nosotros", href: "/#trayectoria" },
   { label: "Contacto", href: "/#contacto" },
 ];
@@ -170,7 +174,7 @@ export function Header() {
               </Link>
             </li>
             <li>
-              <Link href="/#siniestro" className="hover:text-naranja">
+              <Link href="/siniestro" className="hover:text-naranja">
                 En caso de siniestro
               </Link>
             </li>

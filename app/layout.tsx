@@ -26,8 +26,14 @@ export const metadata: Metadata = {
     default: "Charrutti Seguros — Corredor de seguros en Montevideo, Uruguay",
     template: "%s — Charrutti Seguros",
   },
+  /* OJO CON ESTA REDACCIÓN.
+     Decía "las nueve compañías del mercado uruguayo". El BCU tiene diecisiete
+     aseguradoras autorizadas; nueve son con las que Charrutti trabaja. Es el
+     tipo de error que un cliente del rubro ve en el primer vistazo y que
+     además queda cacheado en los resultados de búsqueda. La regla completa
+     está en `respaldo`, en lib/site.ts. */
   description:
-    "Corredor de seguros en Montevideo con más de 25 años en plaza. Cotizamos en las nueve compañías del mercado uruguayo y le recomendamos el seguro justo. Consultas al 2623 1000.",
+    "Corredor de seguros en Montevideo con más de 25 años en plaza. Cotizamos en las nueve compañías con las que trabajamos y le recomendamos el seguro justo. Consultas al 2623 1000.",
   alternates: { canonical: "/" },
 
   /* Esta es una demo de pitch sobre la marca de un cliente que todavía no
@@ -46,7 +52,7 @@ export const metadata: Metadata = {
     siteName: "Charrutti Seguros",
     title: "Charrutti Seguros — Corredor de seguros en Montevideo, Uruguay",
     description:
-      "Cotizamos su seguro en todas las compañías establecidas en el Uruguay y le decimos cuál le conviene. Más de 25 años en plaza.",
+      "Cotizamos su seguro en las nueve compañías con las que trabajamos y le decimos cuál le conviene. Más de 25 años en plaza.",
   },
 
   /* La demo se manda por WhatsApp: la tarjeta de previsualización es lo
@@ -56,7 +62,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Charrutti Seguros — Corredor de seguros en Montevideo, Uruguay",
     description:
-      "Cotizamos su seguro en todas las compañías establecidas en el Uruguay y le decimos cuál le conviene.",
+      "Cotizamos su seguro en las nueve compañías con las que trabajamos y le decimos cuál le conviene.",
   },
 };
 
@@ -72,7 +78,7 @@ const jsonLd = {
   email: site.email,
   telephone: site.telefonos.central.tel,
   description:
-    "Corredor de seguros en Montevideo, Uruguay. Asesoramiento profesional e intermediación en la contratación de seguros, cotizando en todas las compañías establecidas en el país.",
+    "Corredor de seguros en Montevideo, Uruguay. Asesoramiento profesional e intermediación en la contratación de seguros, cotizando en las nueve compañías aseguradoras con las que trabajamos.",
   address: {
     "@type": "PostalAddress",
     streetAddress: site.direccion.calle,

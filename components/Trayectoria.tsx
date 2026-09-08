@@ -29,11 +29,16 @@ export function Trayectoria() {
             <h2 id="trayectoria-titulo" className="text-[1.875rem] sm:text-[2.375rem]">
               {site.trayectoria}
             </h2>
+            {/* Decía "trabajamos con todas las compañías establecidas en el
+                Uruguay", que es la frase del sitio actual y no es cierta: el
+                BCU autoriza diecisiete aseguradoras y Charrutti opera con
+                nueve. Nueve ya es un respaldo enorme frente a un agente de una
+                sola compañía; no necesita el redondeo. */}
             <p className="mt-5 max-w-[42ch] leading-relaxed text-white/85">
               Operamos en todas las carteras de seguros generales y trabajamos
-              con todas las compañías establecidas en el Uruguay. Es lo que nos
-              deja conseguirle las mejores condiciones de contratación, con
-              asesoramiento personalizado también después de la venta.
+              con nueve compañías aseguradoras. Es lo que nos deja conseguirle
+              las mejores condiciones de contratación, con asesoramiento
+              personalizado también después de la venta.
             </p>
             {/* Cierre de /nosotros.html, casi textual: "cuando se trata de su
                 seguridad, es fundamental conocer la experiencia de la empresa a

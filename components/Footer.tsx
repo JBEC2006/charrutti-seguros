@@ -1,5 +1,7 @@
-import { site } from "@/lib/site";
+import Link from "next/link";
+import { site, horario, leyendaPendiente } from "@/lib/site";
 import { Logo } from "./Logo";
+import { Pendiente } from "./Pendiente";
 
 /**
  * Pie.
@@ -12,11 +14,24 @@ import { Logo } from "./Logo";
  * El teléfono va en naranja de marca y no en naranja-hondo como en su CSS
  * actual: sobre este fondo oscuro el hondo da 4.4:1 y el de marca 7.1:1.
  */
-/* Glosario (unos 130 términos) y Links de interés existen en el sitio actual
-   pero no entran en el alcance de esta demo. Antes iban con href="#", que se
-   siente roto. Van como texto plano: quedan declarados en el mapa del sitio
-   sin ofrecer un click que no lleva a ningún lado. */
-const secundarios = ["Glosario de seguros", "Links de interés"];
+/* Glosario y Links de interés existían en el sitio actual y no estaban en esta
+   demo. Pasaron por dos estados malos antes de este: primero href="#", que se
+   siente roto, y después texto plano sin link, que declara el ítem pero no
+   lleva a ningún lado.
+
+   Ahora los dos tienen destino real, migrado del sitio del cliente: el
+   glosario completo (107 términos) y las cinco compañías con sus gestiones en
+   línea. Eran contenido que ya existía y que nadie encontraba: en el sitio
+   actual no están en ningún menú.
+
+   "Estado del proyecto" va acá y no en el nav principal a propósito. Es una
+   página para nosotros y para Charrutti, no para alguien que entra a cotizar
+   un seguro. */
+const secundarios = [
+  { label: "Glosario de seguros", href: "/glosario" },
+  { label: "Links de interés", href: "/links" },
+  { label: "En caso de siniestro", href: "/siniestro" },
+];
 
 export function Footer() {
   return (
@@ -52,7 +67,13 @@ export function Footer() {
                 <br />
                 {site.direccion.ciudad}, {site.direccion.pais}
               </li>
-              <li className="text-white/60">{site.horarios}</li>
+              <li className="pt-1">
+                {horario ? (
+                  <span className="text-white/60">{horario}</span>
+                ) : (
+                  <Pendiente tono="oscuro">{leyendaPendiente.horario}</Pendiente>
+                )}
+              </li>
             </ul>
           </div>
 
@@ -79,8 +100,10 @@ export function Footer() {
             <h2 className="text-lg">Más</h2>
             <ul className="mt-4 space-y-2.5 text-white/80">
               {secundarios.map((s) => (
-                <li key={s} className="text-white/60">
-                  {s}
+                <li key={s.href}>
+                  <Link href={s.href} className="hover:text-white">
+                    {s.label}
+                  </Link>
                 </li>
               ))}
               <li>
@@ -92,6 +115,14 @@ export function Footer() {
                 >
                   Área de Clientes
                 </a>
+              </li>
+              <li className="pt-1">
+                <Link
+                  href="/estado"
+                  className="underline decoration-dotted decoration-white/40 underline-offset-4 hover:text-white hover:decoration-white"
+                >
+                  Estado del proyecto
+                </Link>
               </li>
             </ul>
 

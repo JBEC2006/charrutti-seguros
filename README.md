@@ -23,13 +23,38 @@ sin backend.
 | | |
 |---|---|
 | `/` | Home completa |
-| `/seguros/automoviles` | La única ficha de ramo, como muestra del patrón |
+| `/siniestro` | Los nueve pasos y los teléfonos de las nueve compañías |
+| `/seguros/automoviles` | Ficha de ramo |
+| `/seguros/hogar` | Ficha de ramo |
+| `/seguros/industria-y-comercio` | Ficha de ramo |
+| `/seguros/accidentes-de-trabajo` | Ficha de ramo |
+| `/glosario` | 107 términos, con buscador e índice A-Z |
+| `/links` | Gestiones en línea por compañía |
+| `/estado` | Inventario del proyecto. No está en el nav: se llega desde el pie |
 | 404 | Página de error propia |
 
-**Deliberadamente sin construir:** las otras nueve fichas de ramo, la página
-"Nosotros" separada, el glosario (~130 términos), los links de interés, la
-página completa de siniestro y el área de clientes. Todo eso queda enlazado o
-mencionado, sin destino.
+**Deliberadamente sin construir:** las otras seis fichas de ramo (Vida, SOA,
+Notebooks, Embarcaciones, Transporte, Cultivo), la página "Nosotros" separada y
+el área de clientes. Los seis ramos sin ficha abren el formulario de contacto
+con el ramo ya elegido: no hay ancla muerta en ningún lado.
+
+La lista completa y actualizada vive en **`/estado`**, que es la misma
+información pero presentable en una reunión.
+
+## Cómo se manejan los datos que faltan
+
+Esta demo está incompleta a propósito, y la regla es una sola: **un dato que no
+tenemos va en `null`, nunca un valor plausible.**
+
+Un `null` no desaparece de la página. Lo levanta `<Pendiente />`
+(`components/Pendiente.tsx`) y se muestra como marcador declarado —borde
+punteado, fondo tenue, la leyenda de qué falta—. Esa es la diferencia entre una
+demo incompleta y una demo rota: el hueco se lee como una decisión que le falta
+al cliente, no como un error nuestro.
+
+Los datos de contacto viven en **`src/config/contacto.ts`**, con las leyendas de
+cada hueco al lado del dato que falta. Cargar el valor ahí arregla la página
+sola: no hay que tocar ningún componente.
 
 ## Pendientes del cliente
 
@@ -37,8 +62,13 @@ Nada de esto está inventado en el código: o falta el dato, o falta confirmarlo
 
 | Dato | Estado | Dónde se carga |
 |---|---|---|
-| **Número de WhatsApp** | Falta. Mientras tanto el sitio **no ofrece WhatsApp en ningún lado**: un `wa.me` con número inventado falla apenas lo tocan. Todo apunta al teléfono real. | `lib/site.ts` → `site.whatsapp.numero`. Al cargarlo, el botón flotante y la fila de contacto vuelven solos. |
-| **Horario de atención** | Dice "Lunes a viernes" a secas. Falta la franja horaria. | `lib/site.ts` → `site.horarios` |
+| **Número de WhatsApp** | Falta. El botón se renderiza **deshabilitado**, con la leyenda "Pendiente: número de WhatsApp comercial". Nunca un `wa.me` con número inventado: falla apenas lo tocan. | `src/config/contacto.ts` → `whatsapp.numero`. Al cargarlo, el botón se convierte solo en el link real. |
+| **Horario de atención** | Falta. Se muestra "Horario: a confirmar con Charrutti" con tratamiento de pendiente, en contacto y en el pie. | `src/config/contacto.ts` → `horario` |
+| **Teléfonos de guardia** | 2623 1668 y 2623 1714 **no están publicados en el sitio actual**. Hay que confirmarlos: la home los empuja como la acción urgente. | `src/config/contacto.ts` → `telefonos.siniestros` |
+| **Horarios de las líneas de asistencia** | El sitio actual no publica ninguno. No se afirma "24 h" en ningún lado: la tabla de `/siniestro` lleva un pendiente al pie. | `lib/site.ts` → `pendienteAsistencia` |
+| **Revisión legal del glosario** | Varias definiciones citan la ley **17.418, que es argentina**, y nombran un regulador que no es el uruguayo. Están marcadas una por una en la página. | `lib/glosario.ts` → campo `revisar` |
+| **Montos en UR de accidentes de trabajo** | Las multas del art. 48 y los códigos de condición especial son los que publica el sitio actual, sin fecha. Verificar contra las condiciones vigentes del BSE. | `app/seguros/accidentes-de-trabajo/page.tsx` |
+| **Links de AIG, MetLife, Berkley y HDI** | Las otras cinco compañías tienen gestiones publicadas; estas cuatro no. Se listan igual, con el hueco declarado. | `lib/links.ts` → campo `pendiente` |
 | **Logos de las nueve compañías** | Son marcas de texto. Los PNG del sitio actual **no** se hotlinkean. Reemplazar por los archivos reales, en monocromo. | `components/Companias.tsx` |
 | **Logo de Charrutti** | Se referencia desde el sitio actual. Para producción hay que bajarlo a `/public`. | `components/Logo.tsx` |
 | **Certificación UNIT-ISO 9001** | Va sin número de versión. La web actual dice `:2008`, que está obsoleta, y no confirmamos si recertificaron. | `lib/site.ts` → `site.certificacion` |
@@ -60,6 +90,10 @@ Para darla vuelta hay que tocar tres cosas:
 2. `app/layout.tsx` — sacar el bloque `robots: { index: false }`
 3. `lib/site.ts` — `site.url` apunta al dominio de la demo, no al del cliente
 
+Y antes de eso, cerrar los pendientes de la tabla de arriba. `/estado` los lista
+todos, con el detalle de cuáles son trabajo nuestro y cuáles dependen de que
+Charrutti nos pase un dato.
+
 ## El formulario no envía nada
 
 `components/ContactForm.tsx` hace `preventDefault()` y cambia a un estado de
@@ -68,9 +102,13 @@ intencional: la demo muestra el patrón, no la funcionalidad.
 
 ## Dónde se cambian las cosas
 
-Casi todo lo que el cliente podría querer editar vive en **`lib/site.ts`**:
-teléfonos, dirección, mail, las nueve compañías, los diez ramos agrupados, los
-textos de siniestro y las preguntas frecuentes.
+| Archivo | Qué tiene |
+|---|---|
+| `src/config/contacto.ts` | Teléfonos, correo, dirección, horario, WhatsApp y las leyendas de cada hueco |
+| `lib/site.ts` | Las nueve compañías, los diez ramos agrupados, los pasos de siniestro, los teléfonos de asistencia y las preguntas frecuentes |
+| `lib/glosario.ts` | Los 107 términos |
+| `lib/links.ts` | Las gestiones en línea por compañía |
+| `components/Pendiente.tsx` | Cómo se ve un hueco declarado. Un solo lugar |
 
 ## Decisiones que conviene no romper
 
@@ -86,3 +124,12 @@ textos de siniestro y las preguntas frecuentes.
 - **Ningún precio, ninguna prima.** Un corredor no puede dar una cotización
   vinculante desde una web. La comparativa del hero usa Compañía A / B / C y
   está rotulada como ejemplo ilustrativo.
+- **"Nueve" siempre calificado por CON QUIÉN, nunca por CUÁNTAS HAY.** El BCU
+  tiene diecisiete aseguradoras autorizadas; nueve son con las que Charrutti
+  trabaja. Se dice "las nueve compañías con las que trabajamos". Nunca "las
+  nueve del mercado uruguayo" ni "todas las establecidas en el Uruguay": las dos
+  cosas son falsas y un cliente del rubro las detecta en el primer vistazo. La
+  regla completa está en `respaldo`, en `lib/site.ts`.
+- **Un dato que falta va en `null` y se muestra con `<Pendiente />`.** Nunca un
+  valor plausible, nunca un hueco escondido. Ver "Cómo se manejan los datos que
+  faltan", más arriba.

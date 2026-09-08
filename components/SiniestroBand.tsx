@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { site, pasosSiniestro, pasosSiniestroCompletos } from "@/lib/site";
 
 /**
@@ -106,14 +107,26 @@ export function SiniestroBand() {
             </ul>
           )}
 
-          <button
-            type="button"
-            onClick={() => setVerTodos((v) => !v)}
-            aria-expanded={verTodos}
-            className="mt-5 font-display text-[0.9375rem] font-medium underline decoration-naranja decoration-2 underline-offset-4 hover:decoration-white"
-          >
-            {verTodos ? "Ver solo lo esencial" : "Ver los nueve pasos completos"}
-          </button>
+          <div className="mt-5 flex flex-wrap items-center gap-x-7 gap-y-3">
+            <button
+              type="button"
+              onClick={() => setVerTodos((v) => !v)}
+              aria-expanded={verTodos}
+              className="font-display text-[0.9375rem] font-medium underline decoration-naranja decoration-2 underline-offset-4 hover:decoration-white"
+            >
+              {verTodos ? "Ver solo lo esencial" : "Ver los nueve pasos completos"}
+            </button>
+
+            {/* El desplegable de arriba resuelve los pasos sin sacar a nadie de
+                la página. Lo que no entra acá son los teléfonos de las nueve
+                compañías, que es una tabla: para eso está la página propia. */}
+            <Link
+              href="/siniestro"
+              className="font-display text-[0.9375rem] font-medium underline decoration-white/35 underline-offset-4 hover:decoration-naranja"
+            >
+              Teléfonos de las nueve compañías
+            </Link>
+          </div>
         </div>
       </div>
     </section>

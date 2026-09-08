@@ -1,9 +1,33 @@
 /**
  * Datos de Charrutti Seguros.
  *
- * Todo lo que el cliente podría querer cambiar vive acá. Los datos marcados
- * como PENDIENTE son placeholders: están listados también en el README.
+ * Todo lo que el cliente podría querer cambiar vive acá o en el archivo de
+ * contacto que se importa abajo.
+ *
+ * Los datos de comunicación —teléfonos, correo, dirección, horario, WhatsApp—
+ * se mudaron a `src/config/contacto.ts`. Son los que más cambian, los que el
+ * cliente va a corregir primero, y los que tienen huecos: conviene que estén
+ * juntos y en un archivo que se pueda abrir sin leer el resto del sitio.
+ * Acá se re-exportan para no romper lo que ya los importaba de `site`.
  */
+
+import {
+  direccion,
+  email,
+  telefonos,
+  horario,
+  whatsapp,
+  leyendaPendiente,
+} from "@/src/config/contacto";
+
+export {
+  whatsappHref,
+  telHref,
+  mapsHref,
+  horario,
+  leyendaPendiente,
+} from "@/src/config/contacto";
+export type { Telefono } from "@/src/config/contacto";
 
 export const site = {
   nombre: "Charrutti Seguros",
@@ -19,42 +43,14 @@ export const site = {
   /** El sitio actual del cliente, para referencia en el código. */
   sitioActual: "https://www.charruttiseguros.com.uy",
 
-  // Verificados con el cliente.
-  direccion: {
-    calle: "26 de Marzo 3454, Oficina 101",
-    ciudad: "Montevideo",
-    pais: "Uruguay",
-    // Coordenadas aproximadas de 26 de Marzo 3454 (Pocitos, Montevideo).
-    // Solo se usan para el link a Google Maps y el iframe del mapa.
-    mapsQuery: "26 de Marzo 3454, Montevideo, Uruguay",
-  },
-  email: "operaciones@charruttiseguros.com.uy",
-
-  telefonos: {
-    central: { display: "2623 1000", tel: "+59826231000" },
-    // Hoy estos dos números viven sepultados en el paso 5 de una lista de 9,
-    // en una página que ni siquiera está en el menú.
-    siniestros: [
-      { display: "2623 1668", tel: "+59826231668" },
-      { display: "2623 1714", tel: "+59826231714" },
-    ],
-  },
-
-  // PENDIENTE: número real de WhatsApp.
-  //
-  // Mientras no lo tengamos, el sitio NO promete WhatsApp en ningún lado: un
-  // wa.me con número inventado falla apenas lo tocan, y en un pitch eso se
-  // paga caro. Todo lo que iba a WhatsApp apunta al teléfono real.
-  //
-  // Cuando el cliente pase el número: poner acá el internacional sin signos
-  // (por ejemplo "59899123456") y el sitio vuelve a ofrecer WhatsApp solo.
-  whatsapp: {
-    numero: null as string | null,
-    mensaje: "Hola, quisiera consultar por un seguro.",
-  },
-
-  // PENDIENTE: horario real de atención.
-  horarios: "Lunes a viernes",
+  // Todo lo que sigue vive en src/config/contacto.ts. Ver ese archivo para el
+  // detalle de qué está confirmado y qué está pendiente.
+  direccion,
+  email,
+  telefonos,
+  whatsapp,
+  horario,
+  leyendaPendiente,
 
   // La web actual dice "UNIT-ISO 9001:2008". Esa versión de la norma está
   // obsoleta y no confirmamos si recertificaron, así que va sin número.
@@ -77,6 +73,8 @@ export const site = {
  * Las nueve compañías con las que opera Charrutti.
  * Se muestran como marcas de texto: NO se hotlinkean los PNG del sitio actual.
  * Para producción, reemplazar por los archivos de logo reales de cada compañía.
+ *
+ * CUIDADO CON CÓMO SE REDACTA ESTO. Ver `respaldo` acá abajo.
  */
 export const companias = [
   "BSE",
@@ -89,6 +87,46 @@ export const companias = [
   "Berkley",
   "HDI",
 ] as const;
+
+/**
+ * Cómo se nombra el respaldo. No es una preferencia de estilo: es exactitud.
+ *
+ * EL ERROR QUE ESTO CORRIGE
+ * -------------------------
+ * Versiones anteriores de esta demo decían "las nueve compañías del mercado
+ * uruguayo" y "todas las compañías establecidas en el Uruguay". Las dos cosas
+ * son falsas, y de una forma que un cliente del rubro detecta en el primer
+ * vistazo.
+ *
+ * El BCU tiene diecisiete aseguradoras autorizadas a operar en el país. Nueve
+ * son las compañías con las que Charrutti trabaja. "Las nueve del mercado"
+ * confunde una cosa con la otra e inventa un mercado que no existe; "todas las
+ * establecidas en el Uruguay" es directamente una afirmación que no se puede
+ * sostener.
+ *
+ * El activo de Charrutti es real y no necesita el inflado: nueve compañías es
+ * mucho más de lo que compara alguien que trabaja con una sola. La afirmación
+ * exacta vende igual y no se cae si el cliente la revisa.
+ *
+ * LA REGLA
+ * --------
+ * "Nueve" siempre calificado por CON QUIÉN, nunca por CUÁNTAS HAY.
+ *
+ *   Sí:  "las nueve compañías con las que trabajamos"
+ *   Sí:  "nueve compañías en una sola comparación"
+ *   No:  "las nueve compañías del mercado uruguayo"
+ *   No:  "todas las compañías establecidas en el Uruguay"
+ *   No:  "todas las compañías" a secas
+ */
+export const respaldo = {
+  /** Para meter en el medio de una oración. */
+  frase: "las nueve compañías con las que trabajamos",
+  /** Para encabezados y títulos de sección. */
+  titulo: "Las nueve compañías con las que trabajamos",
+  /** Cantidad, por si algún día cambia y hay que buscarla. */
+  cantidad: companias.length,
+} as const;
+
 /**
  * Los diez ramos, agrupados por a quién le sirve cada uno.
  *
@@ -101,8 +139,11 @@ export const companias = [
  * actual (una por página), con las erratas del original corregidas, y todas
  * recortadas para que ninguna pase de dos líneas.
  *
- * Solo Automóviles tiene página construida en esta demo. Las otras nueve
- * abren el formulario de contacto con el ramo ya elegido.
+ * Cuatro de los diez tienen ficha propia construida: Automóviles, Hogar,
+ * Industria y Comercio, y Accidentes de Trabajo. Se eligieron esos cuatro
+ * porque son los que el propio sitio actual desarrolla más y los que cubren
+ * las tres audiencias de la grilla. Los otros seis abren el formulario de
+ * contacto con el ramo ya elegido: no hay página vacía en ningún caso.
  */
 export type Ramo = {
   nombre: string;
@@ -134,6 +175,7 @@ export const gruposRamos: GrupoRamos[] = [
         nombre: 'Hogar',
         descripcion: 'Incendio, robo del contenido, daños por agua y cristales.',
         slug: 'hogar',
+        href: '/seguros/hogar',
       },
       {
         nombre: 'Vida',
@@ -168,11 +210,13 @@ export const gruposRamos: GrupoRamos[] = [
         // pero otros pueden ser transferidos a una Compañía de Seguros."
         descripcion: 'Muchos riesgos de su empresa son inevitables. Otros puede transferirlos.',
         slug: 'industria-y-comercio',
+        href: '/seguros/industria-y-comercio',
       },
       {
         nombre: 'Accidentes de Trabajo',
         descripcion: 'Obligatorio por la Ley 16.074. Se contrata en el Banco de Seguros.',
         slug: 'accidentes-de-trabajo',
+        href: '/seguros/accidentes-de-trabajo',
       },
       {
         nombre: 'Transporte',
@@ -206,26 +250,66 @@ export const hrefConsulta = (slug: string) => `/?ramo=${slug}#contacto`;
 
 /**
  * Teléfonos de asistencia por compañía.
- * Tomados de /siniestro.html del sitio actual, que tiene las nueve. La página
- * de Automóviles hoy lista solo seis (le faltan BSE, MetLife y Berkley).
+ *
+ * Los nueve están tomados uno a uno de /siniestro.html del sitio actual, que
+ * es la única página donde Charrutti los publica completos. La página de
+ * Automóviles del sitio actual lista solo seis: le faltan BSE, MetLife y
+ * Berkley, justamente tres de las más grandes.
+ *
+ * NO SE INVENTA NINGÚN NÚMERO. Si mañana falta uno, va con `tel: null` y la
+ * tabla lo muestra como pendiente en vez de saltear la fila: una compañía sin
+ * teléfono visible es información útil para el cliente, un número plausible y
+ * equivocado es un problema.
+ *
+ * SOBRE LAS ETIQUETAS: el sitio actual publica BSE y AIG con dos líneas
+ * rotuladas cada una. Las otras siete van con un solo número sin rótulo. Se
+ * las etiqueta "Asistencia y siniestros" porque es lo que se puede afirmar por
+ * el contexto —están publicadas bajo el título "¿Qué HACER en caso de
+ * SINIESTRO?"—, no porque lo diga el original.
+ *
+ * SOBRE LOS HORARIOS: el sitio actual no publica la franja de ninguna. Cuatro
+ * de estos números son 0800 y dos son fijos de Montevideo, que difícilmente
+ * atiendan las 24 horas. No se afirma "24 h" en ningún lado: la tabla lleva un
+ * pendiente al pie en vez de nueve marcadores repetidos.
  */
-export const asistencia = [
-  { compania: "BSE", lineas: [{ label: "Vehículos", tel: "1994" }, { label: "Otros", tel: "1998" }] },
-  { compania: "Mapfre", lineas: [{ label: "Asistencia", tel: "0800 7424" }] },
-  { compania: "SURA", lineas: [{ label: "Asistencia", tel: "0800 8120" }] },
-  { compania: "Porto Seguro", lineas: [{ label: "Asistencia", tel: "2487 8616" }] },
-  { compania: "Sancor", lineas: [{ label: "Asistencia", tel: "0800 8500" }] },
+export type LineaAsistencia = {
+  label: string;
+  /** null = la compañía está, el número todavía no lo tenemos. */
+  tel: string | null;
+};
+
+export type Asistencia = {
+  compania: string;
+  lineas: LineaAsistencia[];
+};
+
+export const asistencia: Asistencia[] = [
+  {
+    compania: "BSE",
+    lineas: [
+      { label: "Vehículos", tel: "1994" },
+      { label: "Otros ramos", tel: "1998" },
+    ],
+  },
+  { compania: "Mapfre", lineas: [{ label: "Asistencia y siniestros", tel: "0800 7424" }] },
+  { compania: "SURA", lineas: [{ label: "Asistencia y siniestros", tel: "0800 8120" }] },
+  { compania: "Porto Seguro", lineas: [{ label: "Asistencia y siniestros", tel: "2487 8616" }] },
+  { compania: "Sancor", lineas: [{ label: "Asistencia y siniestros", tel: "0800 8500" }] },
   {
     compania: "AIG",
     lineas: [
-      { label: "Siniestros", tel: "2902 1521" },
+      { label: "Atención de siniestros", tel: "2902 1521" },
       { label: "Auxilio mecánico", tel: "2902 5792" },
     ],
   },
-  { compania: "MetLife", lineas: [{ label: "Asistencia", tel: "0800 2700" }] },
-  { compania: "Berkley", lineas: [{ label: "Asistencia", tel: "0800 8542" }] },
-  { compania: "HDI", lineas: [{ label: "Asistencia", tel: "0800 2777" }] },
+  { compania: "MetLife", lineas: [{ label: "Asistencia y siniestros", tel: "0800 2700" }] },
+  { compania: "Berkley", lineas: [{ label: "Asistencia y siniestros", tel: "0800 8542" }] },
+  { compania: "HDI", lineas: [{ label: "Asistencia y siniestros", tel: "0800 2777" }] },
 ];
+
+/** Lo que falta de la tabla de arriba, dicho una vez y no nueve. */
+export const pendienteAsistencia =
+  "Pendiente: franja horaria de cada línea. El sitio actual no publica ninguna, así que no se afirma que atiendan 24 horas.";
 
 /**
  * Los pasos que hoy están en /siniestro.html, condensados.
@@ -261,7 +345,10 @@ export const pasosSiniestroCompletos = [
   "Si su vehículo obstaculiza la calzada y no puede retirarlo, adopte las medidas de señalización adecuadas.",
   "Anote los datos del tercero con quien chocó: lugar, matrícula, nombre, dirección, teléfono, número de póliza y aseguradora. Consiga también datos de testigos.",
   "Antes de los 5 días, haga la denuncia personalmente en la compañía o contáctese con nuestras oficinas al 2623 1668 o 2623 1714.",
-  "En caso de hurto, llame de inmediato a la compañía, las 24 horas los 365 días. También debe denunciarlo en la seccional policial correspondiente.",
+  // El original dice "(las 24hs. los 365 días)" refiriéndose a la línea de la
+  // compañía. No se le agrega la denuncia policial: no está en el texto de
+  // Charrutti y es un trámite que conviene que confirmen ellos.
+  "En caso de hurto, llame de inmediato a la compañía de seguros, las 24 horas los 365 días.",
   "No discuta. Ante cualquier reclamo, facilite sus datos al tercero y derívelo a la compañía. No admita ser responsable, por más que así lo sienta en ese momento.",
   "Si recibe una notificación judicial, preséntela de inmediato en la compañía. No intente aclarar ni negociar una solución por su cuenta: déjelo en nuestras manos.",
   "No repare su vehículo sin la autorización previa de la compañía.",
@@ -279,7 +366,10 @@ export const pasosSiniestroCompletos = [
 export const preguntas = [
   {
     q: "¿Qué hace un corredor de seguros?",
-    a: "Cotizamos su seguro en todas las compañías establecidas en el Uruguay y le mostramos las opciones comparadas, con una recomendación. Una aseguradora solo puede ofrecerle lo suyo.",
+    // Decía "en todas las compañías establecidas en el Uruguay". Ver `respaldo`
+    // arriba: son diecisiete las autorizadas por el BCU y nueve las que
+    // trabajamos. La afirmación exacta vende igual.
+    a: "Cotizamos su seguro en las nueve compañías con las que trabajamos y le mostramos las opciones comparadas, con una recomendación. Una aseguradora solo puede ofrecerle lo suyo.",
   },
   {
     q: "¿Cuánto cuesta contratar a través de un corredor?",
@@ -298,20 +388,5 @@ export const preguntas = [
   },
 ];
 
-/**
- * Devuelve el link de WhatsApp solo si hay número real cargado.
- * Si no lo hay, devuelve null y quien lo use tiene que caer al teléfono.
- * Así no existe la posibilidad de publicar un wa.me roto.
- */
-export const whatsappHref = site.whatsapp.numero
-  ? `https://wa.me/${site.whatsapp.numero}?text=${encodeURIComponent(
-      site.whatsapp.mensaje,
-    )}`
-  : null;
-
-/** El canal de contacto inmediato que sí funciona hoy. */
-export const telHref = `tel:${site.telefonos.central.tel}`;
-
-export const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-  site.direccion.mapsQuery,
-)}`;
+/* whatsappHref, telHref y mapsHref se re-exportan arriba desde
+   src/config/contacto.ts, junto al dato del que dependen. */

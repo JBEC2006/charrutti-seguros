@@ -1,4 +1,4 @@
-import { companias } from "@/lib/site";
+import { companias, respaldo } from "@/lib/site";
 
 /**
  * Las nueve compañías, en desfile continuo.
@@ -42,11 +42,15 @@ export function Companias() {
       aria-labelledby="companias-titulo"
       className="border-b border-linea bg-white py-8 lg:py-10"
     >
+      {/* "Estas nueve compañías" dejaba abierto de qué nueve se habla, y en la
+          página convivía con textos que decían "las nueve del mercado". Ahora
+          la franja dice explícitamente con quién trabaja Charrutti: es lo
+          único que se puede afirmar, y es suficiente. */}
       <h2
         id="companias-titulo"
         className="px-5 text-center font-display text-[0.9375rem] font-medium text-carbon/70"
       >
-        Cotizamos su seguro en estas nueve compañías
+        Cotizamos su seguro en {respaldo.frase}
       </h2>
 
       <div className="desfile relative mt-6 overflow-hidden">

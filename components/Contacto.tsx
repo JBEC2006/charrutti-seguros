@@ -1,6 +1,7 @@
-import { site, whatsappHref } from "@/lib/site";
+import { site, whatsappHref, horario, leyendaPendiente } from "@/lib/site";
 import { ContactForm } from "./ContactForm";
 import { Mapa } from "./Mapa";
+import { Pendiente, BotonPendiente } from "./Pendiente";
 
 /**
  * Sección de contacto.
@@ -70,10 +71,16 @@ export function Contacto() {
               </a>
             </Dato>
 
-            {/* La fila de WhatsApp vuelve sola en cuanto carguemos el número
-                real en lib/site.ts. Hasta entonces no se ofrece el canal. */}
-            {whatsappHref && (
-              <Dato etiqueta="WhatsApp">
+            {/* WhatsApp.
+                Una versión anterior de esta demo escondía la fila entera
+                mientras no hubiera número. Era prolijo y era peor: el hueco
+                desaparecía, y con él la conversación de que falta un dato.
+                Ahora la fila se queda, el botón se muestra deshabilitado y
+                dice exactamente qué falta. Cuando llegue el número, se escribe
+                en src/config/contacto.ts y esto se convierte solo en el link
+                real: no hay que tocar este archivo. */}
+            <Dato etiqueta="WhatsApp">
+              {whatsappHref ? (
                 <a
                   href={whatsappHref}
                   target="_blank"
@@ -82,8 +89,10 @@ export function Contacto() {
                 >
                   Escribirnos por WhatsApp
                 </a>
-              </Dato>
-            )}
+              ) : (
+                <BotonPendiente>{leyendaPendiente.whatsapp}</BotonPendiente>
+              )}
+            </Dato>
 
             {/* El "Cómo llegar" vive en la banda del mapa, abajo: acá quedaba
                 duplicado a pocos centímetros del mismo link. */}
@@ -94,9 +103,17 @@ export function Contacto() {
               </p>
             </Dato>
 
-            {/* PENDIENTE: horario real de atención. */}
+            {/* Horario.
+                Antes decía "Lunes a viernes" a secas, en el mismo tono que el
+                resto de los datos. Eso es lo peor de los dos mundos: no le
+                sirve a nadie que quiera saber si llega a las 17:30, y encima
+                se lee como dato confirmado. Va como pendiente declarado. */}
             <Dato etiqueta="Atención">
-              <p>{site.horarios}</p>
+              {horario ? (
+                <p>{horario}</p>
+              ) : (
+                <Pendiente>{leyendaPendiente.horario}</Pendiente>
+              )}
             </Dato>
 
             {/* El mapa cierra esta columna. El formulario de al lado es unos
