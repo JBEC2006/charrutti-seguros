@@ -1,4 +1,7 @@
-import { site, pasosSiniestro } from "@/lib/site";
+"use client";
+
+import { useState } from "react";
+import { site, pasosSiniestro, pasosSiniestroCompletos } from "@/lib/site";
 
 /**
  * El único momento fuerte de la página.
@@ -18,10 +21,14 @@ import { site, pasosSiniestro } from "@/lib/site";
  * importa: los dos teléfonos de guardia. La urgencia la dan la jerarquía y el
  * contraste, no la saturación.
  *
- * La lista va numerada porque es de verdad una secuencia: son los primeros
- * movimientos después de un choque, en orden.
+ * Los pasos: por defecto se ven cuatro sin numerar —lo que sirve mientras la
+ * persona sigue en el lugar— y un boton despliega los nueve completos, en su
+ * orden real. Antes se mostraban cuatro numerados 1-2-3-4 con un texto abajo
+ * aclarando que en realidad eran nueve, lo que se contradecia solo.
  */
 export function SiniestroBand() {
+  const [verTodos, setVerTodos] = useState(false);
+
   return (
     <section
       id="siniestro"
@@ -63,31 +70,50 @@ export function SiniestroBand() {
         </div>
 
         <div>
-          <h3 className="text-lg">Mientras tanto</h3>
-          <ol className="mt-4">
-            {pasosSiniestro.map((paso, i) => (
-              <li
-                key={paso}
-                className="flex gap-4 border-t border-white/20 py-3.5 last:border-b"
-              >
-                <span
-                  aria-hidden="true"
-                  className="shrink-0 font-display text-lg tabular-nums text-naranja"
+          <h3 className="text-lg">
+            {verTodos ? "Los nueve pasos" : "Mientras tanto"}
+          </h3>
+
+          {verTodos ? (
+            /* La lista real de /siniestro.html, completa y en su orden. */
+            <ol className="mt-4">
+              {pasosSiniestroCompletos.map((paso, i) => (
+                <li
+                  key={paso}
+                  className="flex gap-4 border-t border-white/20 py-3 last:border-b"
                 >
-                  {i + 1}
-                </span>
-                <span className="leading-snug">{paso}</span>
-              </li>
-            ))}
-          </ol>
-          {/* Antes acá había un link a "#" que no llevaba a ningún lado: la
-              página completa de siniestro no entra en el alcance de la demo.
-              Un href muerto se siente roto, no deliberado, así que esto pasa a
-              ser texto: dice algo útil y no promete un click que no existe. */}
-          <p className="mt-5 text-[0.9375rem] leading-relaxed">
-            Son nueve pasos en total y cada compañía tiene su propia línea de
-            asistencia. Si llama a la guardia se los vamos indicando nosotros.
-          </p>
+                  <span className="shrink-0 font-display text-lg tabular-nums text-naranja">
+                    {i + 1}
+                  </span>
+                  <span className="leading-snug">{paso}</span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            /* Lo esencial de los primeros minutos, sin numerar: son los pasos
+               1, 4, 7 y 9 de la lista de arriba, y numerarlos 1-2-3-4 haría
+               parecer que la secuencia completa es de cuatro. */
+            <ul className="mt-4">
+              {pasosSiniestro.map((paso) => (
+                <li
+                  key={paso}
+                  className="flex gap-4 border-t border-white/20 py-3.5 last:border-b"
+                >
+                  <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 bg-naranja" />
+                  <span className="leading-snug">{paso}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <button
+            type="button"
+            onClick={() => setVerTodos((v) => !v)}
+            aria-expanded={verTodos}
+            className="mt-5 font-display text-[0.9375rem] font-medium underline decoration-naranja decoration-2 underline-offset-4 hover:decoration-white"
+          >
+            {verTodos ? "Ver solo lo esencial" : "Ver los nueve pasos completos"}
+          </button>
         </div>
       </div>
     </section>

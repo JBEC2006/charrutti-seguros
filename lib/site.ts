@@ -232,11 +232,39 @@ export const asistencia = [
  * Se eligieron 4 de los 9: los dos primeros movimientos y los dos errores
  * que más caro salen.
  */
+/**
+ * Lo esencial de los primeros minutos.
+ *
+ * Son condensaciones de los pasos 1, 4, 7 y 9 de la lista completa: los que
+ * sirven mientras la persona sigue en el lugar del choque. Van SIN numerar a
+ * propósito. Numerarlos 1-2-3-4 inventaba una secuencia que no existe y
+ * contradecía a la lista real, que tiene nueve.
+ */
 export const pasosSiniestro = [
   "Si hay heridos, auxilie a los accidentados y llame a las autoridades.",
   "Anote los datos del tercero: matrícula, nombre, teléfono, póliza y aseguradora. Busque testigos.",
   "No discuta ni admita ser responsable. Derive el reclamo a la compañía.",
   "No repare el vehículo sin la autorización previa de la compañía.",
+];
+
+/**
+ * Los nueve pasos completos, en el orden y con el contenido de
+ * /siniestro.html. Se corrigen erratas y se pasa todo a un castellano más
+ * llano, pero no se agrega ni se saca ningún paso.
+ *
+ * Hoy en el sitio del cliente esta lista vive en una página a la que no se
+ * llega desde ningún menú.
+ */
+export const pasosSiniestroCompletos = [
+  "Si hay heridos, auxilie a los accidentados y llame a las autoridades competentes.",
+  "Realice la denuncia a la compañía de seguros.",
+  "Si su vehículo obstaculiza la calzada y no puede retirarlo, adopte las medidas de señalización adecuadas.",
+  "Anote los datos del tercero con quien chocó: lugar, matrícula, nombre, dirección, teléfono, número de póliza y aseguradora. Consiga también datos de testigos.",
+  "Antes de los 5 días, haga la denuncia personalmente en la compañía o contáctese con nuestras oficinas al 2623 1668 o 2623 1714.",
+  "En caso de hurto, llame de inmediato a la compañía, las 24 horas los 365 días. También debe denunciarlo en la seccional policial correspondiente.",
+  "No discuta. Ante cualquier reclamo, facilite sus datos al tercero y derívelo a la compañía. No admita ser responsable, por más que así lo sienta en ese momento.",
+  "Si recibe una notificación judicial, preséntela de inmediato en la compañía. No intente aclarar ni negociar una solución por su cuenta: déjelo en nuestras manos.",
+  "No repare su vehículo sin la autorización previa de la compañía.",
 ];
 
 /**
