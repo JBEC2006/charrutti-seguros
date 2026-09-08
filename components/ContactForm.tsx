@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ramos } from "@/lib/site";
+import { SelectorRamo } from "./SelectorRamo";
 
 /**
  * Formulario de consulta, visual.
@@ -91,26 +92,10 @@ export function ContactForm() {
         </div>
 
         <div className="sm:col-span-2">
-          <label htmlFor="ramo" className="font-display text-[0.9375rem] font-medium">
+          <label htmlFor="ramo" id="ramo-label" className="font-display text-[0.9375rem] font-medium">
             Qué quiere asegurar
           </label>
-          <select
-            id="ramo"
-            name="ramo"
-            value={ramo}
-            onChange={(e) => setRamo(e.target.value)}
-            className={campo}
-          >
-            <option value="" disabled>
-              Elija una opción
-            </option>
-            {ramos.map((r) => (
-              <option key={r.slug} value={r.nombre}>
-                {r.nombre}
-              </option>
-            ))}
-            <option value="otra">Otra cosa</option>
-          </select>
+          <SelectorRamo id="ramo" value={ramo} onChange={setRamo} />
         </div>
 
         <div className="sm:col-span-2">

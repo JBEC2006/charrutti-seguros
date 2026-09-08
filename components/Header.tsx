@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "./Logo";
 import { site, ramos, hrefConsulta } from "@/lib/site";
@@ -8,16 +9,83 @@ import { site, ramos, hrefConsulta } from "@/lib/site";
 /* Nav corto y de primer nivel. Hoy el sitio tiene dos menús distintos según la
    página, y ni Siniestro ni Glosario ni Links de interés están en ninguno de
    los dos. Acá "En caso de siniestro" es de primer nivel, que es lo que
-   corresponde al caso de uso más urgente del negocio. */
+   corresponde al caso de uso más urgente del negocio.
+
+   EL ORDEN SIGUE AL DE LA PÁGINA: siniestro (836px) -> seguros (~2000) ->
+   trayectoria (3846) -> contacto (4292). Antes el nav iba Inicio, Nosotros,
+   Seguros, Siniestro: recorrerlo de izquierda a derecha saltaba al fondo de
+   la página, después subía, después volvía a bajar. Ahora avanza.
+
+   "Seguros" no está en esta lista porque es el desplegable, y se intercala
+   en su posición dentro del render. */
+/* Marca efímera para saber que el clic en "Inicio" vino de otra página. */
+const MARCA_INICIO = "charrutti:ir-al-inicio";
+
 const nav = [
   { label: "Inicio", href: "/" },
-  { label: "Nosotros", href: "/#trayectoria" },
   { label: "En caso de siniestro", href: "/#siniestro" },
+  { label: "Nosotros", href: "/#trayectoria" },
   { label: "Contacto", href: "/#contacto" },
 ];
 
 export function Header() {
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const pathname = usePathname();
+
+  /* Al aterrizar en la home viniendo de otra página, el navegador restaura la
+     posición previa y quedábamos en el medio.
+
+     La marca va en sessionStorage y no en un ref porque cada página renderiza
+     su propio <Header>: al navegar, este componente se desmonta y se vuelve a
+     montar, así que cualquier ref se perdería en el camino.
+
+     Dos frames de espera alcanzan para pisar la restauración del navegador. */
+  useEffect(() => {
+    if (pathname !== "/") return;
+    try {
+      if (sessionStorage.getItem(MARCA_INICIO) !== "1") return;
+      sessionStorage.removeItem(MARCA_INICIO);
+    } catch {
+      return; // modo privado o cookies bloqueadas: no pasa nada
+    }
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => window.scrollTo({ top: 0 })),
+    );
+  }, [pathname]);
+
+  /**
+   * "Inicio" estaba roto en dos escenarios distintos:
+   *
+   *  - En la home ya scrolleada, hacer clic no hacía nada: para Next es la
+   *    misma ruta, así que no navega ni mueve el scroll.
+   *  - Viniendo de otra página, aterrizaba en el medio de la home en vez de
+   *    arriba, porque el navegador restauraba la posición previa.
+   *
+   * Acá se resuelven los dos: si ya estamos en la home, se cancela la
+   * navegación y se sube con scroll suave limpiando el hash; si venimos de
+   * otra página, se deja navegar a Next y se fuerza el tope al llegar.
+   */
+  function irAlInicio(e: React.MouseEvent<HTMLAnchorElement>) {
+    setMenuAbierto(false);
+
+    if (window.location.pathname === "/") {
+      e.preventDefault();
+      if (window.location.hash) {
+        window.history.replaceState(null, "", "/");
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    // Venimos de otra página: Next todavía no navegó, así que no sirve
+    // scrollear acá. Se deja la marca y el efecto de abajo lo hace al llegar.
+    try {
+      sessionStorage.setItem(MARCA_INICIO, "1");
+    } catch {
+      /* sin sessionStorage se pierde el ajuste fino, no la navegación */
+    }
+  }
+
   const [dropAbierto, setDropAbierto] = useState(false);
   const dropRef = useRef<HTMLLIElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -88,13 +156,13 @@ export function Header() {
         <nav aria-label="Principal" className="mx-auto hidden lg:block">
           <ul className="flex items-center gap-7 font-display text-[0.9375rem] font-medium">
             <li>
-              <Link href="/" className="hover:text-naranja">
+              <Link href="/" onClick={irAlInicio} className="hover:text-naranja">
                 Inicio
               </Link>
             </li>
             <li>
-              <Link href="/#trayectoria" className="hover:text-naranja">
-                Nosotros
+              <Link href="/#siniestro" className="hover:text-naranja">
+                En caso de siniestro
               </Link>
             </li>
             <li ref={dropRef} className="relative">
@@ -133,8 +201,8 @@ export function Header() {
               )}
             </li>
             <li>
-              <Link href="/#siniestro" className="hover:text-naranja">
-                En caso de siniestro
+              <Link href="/#trayectoria" className="hover:text-naranja">
+                Nosotros
               </Link>
             </li>
             <li>
@@ -212,7 +280,9 @@ export function Header() {
                 <li key={n.href} className="border-b border-white/15">
                   <Link
                     href={n.href}
-                    onClick={() => setMenuAbierto(false)}
+                    onClick={
+                      n.href === "/" ? irAlInicio : () => setMenuAbierto(false)
+                    }
                     className="block py-4"
                   >
                     {n.label}
