@@ -1,4 +1,4 @@
-import { companias, site } from "@/lib/site";
+import { site } from "@/lib/site";
 
 /**
  * Trayectoria, respaldo y Política de Calidad.
@@ -8,6 +8,10 @@ import { companias, site } from "@/lib/site";
  * en tres líneas, dice lo mismo en concreto, y va donde corresponde: como
  * respaldo, no como apertura. Misión y Visión no van; su contenido ya está
  * dicho en el hero y en el bloque de corredor.
+ *
+ * Las nueve compañías se movieron a su propia franja debajo del hero: acá,
+ * al final de la página, llegaban después de que el visitante ya decidió si
+ * le importaban.
  *
  * La certificación va sin número de versión: la web dice UNIT-ISO 9001:2008,
  * que está obsoleta, y no confirmamos si recertificaron.
@@ -46,17 +50,6 @@ export function Trayectoria() {
           </div>
         </div>
 
-        <div className="mt-14 border-t border-white/20 pt-8 lg:mt-20">
-          <h3 className="text-lg">Cotizamos en estas nueve compañías</h3>
-          {/* Marcas de texto, no logos. Los PNG del sitio actual no se
-              hotlinkean. Para producción: reemplazar por los archivos de logo
-              reales de cada compañía, en monocromo sobre este fondo. */}
-          <ul className="mt-6 flex flex-wrap gap-x-9 gap-y-4 font-display text-lg font-medium text-white/70">
-            {companias.map((c) => (
-              <li key={c}>{c}</li>
-            ))}
-          </ul>
-        </div>
       </div>
     </section>
   );

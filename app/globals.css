@@ -1,32 +1,55 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
-   Paleta de Charrutti.
+   Paleta de Charrutti. Sale entera del logo, muestreado pixel por pixel.
 
-   Extraída del CSS del sitio actual (/assets/css/style.css). No es una
-   identidad nueva: es la que ya tienen, ordenada.
+   El logo tiene exactamente dos colores propios:
 
-     #EE9714  a.rounded-link, li.active > a, a.siniestro-banner
-     #E46613  footer .phone  (usamos #DF5911, del degrade del propio logo:
-                       el original da 3.00:1 sobre papel y no llega al minimo)
-     #333     footer background
+     #ED9417  el naranja del isotipo y de la palabra CHARRUTTI (415 px, el
+              tono dominante del wordmark). Nuestro --color-naranja es
+              #EE9714, que además es el que ya usa su CSS actual en
+              a.rounded-link, li.active > a y a.siniestro-banner.
+
+     #8C8B8B  el gris de la palabra SEGUROS. Desviación R−B = 1: es un gris
+              NEUTRO, no cálido. Este es el dato que ordena toda la paleta.
+
+   Por eso la base es neutra y no crema. Una versión anterior usaba un fondo
+   #F3F1ED y un borde #E3DED6, los dos cálidos: metían un tercer tono que no
+   está en el logo, empujaban el conjunto hacia lo artesanal cuando el brief
+   pide solidez institucional, y coincidían con el patrón crema + serif +
+   acento terracota que es el default más reconocible de las páginas
+   generadas con IA. El naranja se defiende solo porque viene del logo;
+   el crema no tenía esa defensa.
+
+   El casi-negro se mantiene: es el fondo que el propio sitio actual usa
+   detrás del logo (su footer es #333) y funciona.
 
    Se descarta el verde #51a351 de su CSS: es el btn-success de fábrica de
    Bootstrap 2 (el sitio usa .navbar .navbar-inner), no una decisión de marca.
 
-   Reglas de contraste, medidas:
-     naranja sobre claro          2.2:1  → NUNCA texto. Solo superficie.
-     carbon sobre naranja         6.9:1  → cuerpo, cómodo.
-     naranja-hondo sobre blanco   3.6:1  → solo texto grande (teléfonos).
-     carbon sobre papel          ~15:1
+   REGLAS DE USO, por contraste medido:
+     naranja sobre claro           2.2:1  → NUNCA texto. Solo superficie.
+     carbon sobre naranja          7.2:1  → cuerpo, cómodo.
+     naranja-hondo sobre niebla    3.4:1  → solo texto grande (teléfonos).
+     gris sobre niebla             3.0:1  → NUNCA texto de cuerpo. Filetes,
+                                            bordes y detalle no textual.
+     carbon sobre niebla          14.8:1
+     texto secundario              usar carbon/70, no gris.
+
+   RITMO DE FONDOS (deliberado, no alterno por gusto):
+     niebla  = el suelo de la página.
+     blanco  = lo que se lee de cerca o se toca (tarjetas, formulario, hoja).
+     carbon  = los dos momentos de peso: siniestro y trayectoria, más el
+               header y el pie, que enmarcan.
 --------------------------------------------------------------------------- */
 
 @theme {
   --color-naranja: #ee9714;
   --color-naranja-hondo: #df5911;
   --color-carbon: #221e1a;
-  --color-papel: #f3f1ed;
-  --color-arena: #e3ded6;
+  --color-niebla: #f2f2f1;
+  --color-gris: #8c8b8b;
+  --color-linea: #dededd;
 
   --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-source-serif), ui-serif, Georgia, serif;
@@ -49,7 +72,7 @@
   }
 
   body {
-    background-color: var(--color-papel);
+    background-color: var(--color-niebla);
     color: var(--color-carbon);
     font-family: var(--font-body);
     font-size: var(--text-base);
@@ -67,6 +90,22 @@
     letter-spacing: -0.02em;
     line-height: 1.08;
     text-wrap: balance;
+  }
+
+  /* Movimiento como respuesta a una acción, en todo lo interactivo.
+     200ms, sin rebote: acusa recibo del hover sin llamar la atención.
+     Va acá y no repetido en cada componente para que no se degrade. */
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    transition:
+      color 200ms ease,
+      background-color 200ms ease,
+      border-color 200ms ease,
+      text-decoration-color 200ms ease,
+      box-shadow 200ms ease;
   }
 
   /* Foco visible en todo el sitio. Nunca outline:none a secas. */
@@ -91,14 +130,29 @@
 }
 
 /* ---------------------------------------------------------------------------
-   El único momento de movimiento del sitio: la hoja comparativa del hero se
-   arma sola al cargar. Nada más se anima en toda la página.
+   EL ÚNICO MOMENTO DE MOVIMIENTO DEL SITIO.
+
+   La hoja comparativa del hero se arma sola al cargar, una vez. Nada más se
+   anima por su cuenta en toda la página: no hay fade-and-slide-up por sección
+   al hacer scroll, que es el patrón que delata una página generada.
+
+   El gesto no decora: representa literalmente lo que hace un corredor
+   —compara y marca cuál conviene—. Por eso el orden importa. Primero se
+   asientan los datos, después se traza el círculo alrededor de la B como si
+   alguien lo marcara con lapicera, y recién al final aparece la conclusión.
+
+   Línea de tiempo (termina en 1460ms, una sola vez):
+     200 ─ 705    las cuatro filas, con 55ms de desfase entre ellas
+     700 ─ 1220   se traza el círculo naranja
+     1180 ─ 1460  aparece la nota al margen
+
+   Recorridos cortos y curvas amortiguadas sin rebote. Nada elástico.
 --------------------------------------------------------------------------- */
 
 @keyframes fila-entra {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(5px);
   }
   to {
     opacity: 1;
@@ -114,21 +168,23 @@
 
 .hoja-fila {
   opacity: 0;
-  animation: fila-entra 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-  animation-delay: calc(var(--i) * 60ms + 250ms);
+  /* easeOutQuint: frena sin pasarse de largo. */
+  animation: fila-entra 340ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--i) * 55ms + 200ms);
 }
 
 .hoja-circulo {
   stroke-dasharray: 340;
   stroke-dashoffset: 340;
-  animation: traza-circulo 0.7s cubic-bezier(0.65, 0, 0.35, 1) forwards;
-  animation-delay: 620ms;
+  /* Más lento que el resto a propósito: es un trazo de mano, no un fundido. */
+  animation: traza-circulo 520ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  animation-delay: 700ms;
 }
 
 .hoja-nota {
   opacity: 0;
-  animation: fila-entra 0.5s ease-out forwards;
-  animation-delay: 1050ms;
+  animation: fila-entra 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: 1180ms;
 }
 
 @media (prefers-reduced-motion: reduce) {

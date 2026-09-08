@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Logo } from "./Logo";
-import { site, ramos } from "@/lib/site";
+import { site, ramos, hrefConsulta } from "@/lib/site";
 
 /* Nav corto y de primer nivel. Hoy el sitio tiene dos menús distintos según la
    página, y ni Siniestro ni Glosario ni Links de interés están en ninguno de
@@ -76,7 +76,12 @@ export function Header() {
   return (
     <header className="sobre-carbon sticky top-0 z-50 bg-carbon text-white">
       <div className="mx-auto flex max-w-[1180px] items-center px-5 py-3.5 lg:px-8">
-        <Link href="/" className="shrink-0" aria-label="Charrutti Seguros, inicio">
+        {/* -my-1.5 py-1.5: agranda el area tactil a 44px sin crecer el header. */}
+        <Link
+          href="/"
+          className="-my-1.5 shrink-0 py-1.5"
+          aria-label="Charrutti Seguros, inicio"
+        >
           <Logo className="h-8 w-auto lg:h-9" />
         </Link>
 
@@ -115,9 +120,9 @@ export function Header() {
                     {ramos.map((r) => (
                       <li key={r.nombre}>
                         <Link
-                          href={r.href}
+                          href={r.href ?? hrefConsulta(r.slug)}
                           onClick={() => setDropAbierto(false)}
-                          className="block px-5 py-2 font-display text-[0.9375rem] font-medium hover:bg-papel"
+                          className="block px-5 py-2 font-display text-[0.9375rem] font-medium hover:bg-niebla"
                         >
                           {r.nombre}
                         </Link>
@@ -221,7 +226,7 @@ export function Header() {
               {ramos.map((r) => (
                 <li key={r.nombre} className="border-b border-white/15">
                   <Link
-                    href={r.href}
+                    href={r.href ?? hrefConsulta(r.slug)}
                     onClick={() => setMenuAbierto(false)}
                     className="block py-3 font-display text-[0.9375rem] font-medium"
                   >

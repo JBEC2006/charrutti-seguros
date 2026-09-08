@@ -1,34 +1,48 @@
 import Link from "next/link";
-import { ramos } from "@/lib/site";
+import { gruposRamos, hrefConsulta, type Ramo } from "@/lib/site";
 
 /**
- * Los diez ramos, navegables.
+ * Los diez ramos, agrupados por audiencia.
  *
- * Hoy están escondidos en un dropdown de diez ítems sin una sola línea de
- * descripción, aunque el contenido existe y es bueno: cada ficha del sitio
- * actual tiene coberturas detalladas. El problema no es que falte contenido,
- * es que la arquitectura lo entierra. Las descripciones de acá salen de esas
- * mismas páginas.
+ * La versión anterior era una grilla plana donde Automóviles ocupaba dos
+ * columnas y era una tarjeta blanca elevada mientras las otras nueve eran
+ * celdas planas. Esa diferencia no comunicaba nada: leía como una celda mal
+ * puesta. Además los textos tenían largos muy distintos, así que el vacío bajo
+ * cada celda variaba muchísimo y el conjunto parecía una tabla incompleta.
  *
- * La grilla es desigual a propósito: Automóviles ocupa el doble de ancho
- * porque es el ramo más grande y el único con página construida. La
- * desigualdad codifica información; diez tarjetas iguales no dirían nada.
- *
- * Los ramos sin ficha construida NO son links: se ven como entradas de la
- * grilla pero no llevan a ninguna parte, para no simular páginas que la demo
- * no incluye.
+ * Ahora: tres grupos con encabezado propio, y dentro de cada uno tarjetas
+ * todas iguales —misma altura, mismo tratamiento, todas accionables—.
+ * Automóviles se distingue por su acción ("Ver la cobertura"), no por ser de
+ * otro color; los otros nueve abren el formulario con el ramo ya elegido.
  */
-export function RamosGrid() {
-  const [destacado, ...resto] = ramos;
+function TarjetaRamo({ ramo }: { ramo: Ramo }) {
+  const tieneFicha = Boolean(ramo.href);
 
+  return (
+    <Link
+      href={ramo.href ?? hrefConsulta(ramo.slug)}
+      className="group flex h-full w-full flex-col border border-linea bg-white p-6 hover:border-carbon hover:shadow-[0_4px_16px_-6px_rgba(34,30,26,.28)]"
+    >
+      <h4 className="font-display text-lg leading-tight">{ramo.nombre}</h4>
+      <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-carbon/80">
+        {ramo.descripcion}
+      </p>
+      <span className="mt-auto pt-5 font-display text-[0.9375rem] font-medium underline decoration-naranja decoration-2 underline-offset-4 group-hover:decoration-carbon">
+        {tieneFicha ? "Ver la cobertura" : "Consultar"}
+      </span>
+    </Link>
+  );
+}
+
+export function RamosGrid() {
   return (
     <section
       id="seguros"
       aria-labelledby="seguros-titulo"
-      className="border-b border-arena"
+      className="border-b border-linea"
     >
       <div className="mx-auto max-w-[1180px] px-5 py-16 lg:px-8 lg:py-20">
-        <h2 id="seguros-titulo" className="max-w-[24ch] text-[1.875rem] sm:text-[2.375rem]">
+        <h2 id="seguros-titulo" className="text-[1.875rem] sm:text-[2.375rem]">
           Qué aseguramos
         </h2>
         <p className="mt-4 max-w-[46ch] text-lg">
@@ -36,44 +50,25 @@ export function RamosGrid() {
           pregúntenos igual.
         </p>
 
-        <div className="mt-10 grid grid-cols-1 border-t border-arena sm:grid-cols-2 lg:grid-cols-4">
-          <Link
-            href={destacado.href}
-            className="group flex flex-col justify-between border-b border-arena bg-white p-6 sm:col-span-2 lg:p-8"
-          >
-            <div>
-              <h3 className="text-xl">{destacado.nombre}</h3>
-              <p className="mt-3 max-w-[42ch] leading-relaxed">{destacado.descripcion}</p>
-            </div>
-            <span className="mt-6 font-display font-medium underline decoration-naranja decoration-2 underline-offset-[6px] group-hover:decoration-carbon">
-              Ver el seguro de automóviles
-            </span>
-          </Link>
+        <div className="mt-12 space-y-12 lg:mt-14 lg:space-y-14">
+          {gruposRamos.map((grupo) => (
+            <div key={grupo.titulo}>
+              <div className="border-b border-carbon pb-3">
+                <h3 className="font-display text-xl">{grupo.titulo}</h3>
+                <p className="mt-1 text-[0.9375rem] text-carbon/70">
+                  {grupo.bajada}
+                </p>
+              </div>
 
-          {resto.map((r) => (
-            <div
-              key={r.nombre}
-              className="border-b border-arena p-6 sm:border-l lg:p-7"
-            >
-              <h3 className="text-lg">{r.nombre}</h3>
-              <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-carbon/80">
-                {r.descripcion}
-              </p>
+              <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {grupo.ramos.map((ramo) => (
+                  <li key={ramo.slug} className="flex">
+                    <TarjetaRamo ramo={ramo} />
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
-
-          <div className="border-b border-arena bg-white p-6 sm:border-l lg:p-7">
-            <h3 className="text-lg">¿No lo encuentra acá?</h3>
-            <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-carbon/80">
-              Cuéntenos qué necesita asegurar y lo cotizamos igual.
-            </p>
-            <a
-              href="#contacto"
-              className="mt-3 inline-block font-display text-[0.9375rem] font-medium underline decoration-naranja decoration-2 underline-offset-4 hover:decoration-carbon"
-            >
-              Escribirnos
-            </a>
-          </div>
         </div>
       </div>
     </section>

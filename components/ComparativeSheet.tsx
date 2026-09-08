@@ -54,7 +54,7 @@ function Marca({ si }: { si: boolean }) {
 export function ComparativeSheet() {
   return (
     <figure className="relative mx-auto w-full max-w-[30rem] lg:mx-0 lg:max-w-none">
-      <div className="bg-white px-5 py-6 shadow-[7px_9px_0_0_var(--color-arena)] sm:px-7 sm:py-7 lg:-rotate-[0.7deg]">
+      <div className="bg-white px-5 py-6 shadow-[7px_9px_0_0_var(--color-linea)] sm:px-7 sm:py-7 lg:-rotate-[0.7deg]">
         <figcaption className="font-display text-sm font-medium text-carbon/65">
           Ejemplo ilustrativo. No es una cotización.
         </figcaption>
@@ -109,7 +109,7 @@ export function ComparativeSheet() {
             {criterios.map((c, i) => (
               <tr
                 key={c.que}
-                className="hoja-fila border-b border-arena last:border-b-0"
+                className="hoja-fila border-b border-linea last:border-b-0"
                 style={{ "--i": i } as React.CSSProperties}
               >
                 <th

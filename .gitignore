@@ -31,3 +31,6 @@ next-env.d.ts
 # archivos que Next 16 genera solos y no queremos versionar
 /AGENTS.md
 /CLAUDE.md
+
+.vercel
+.env*

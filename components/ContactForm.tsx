@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ramos } from "@/lib/site";
 
 /**
@@ -15,10 +15,22 @@ import { ramos } from "@/lib/site";
  * contratación, y no van en la home.
  */
 const campo =
-  "mt-1.5 w-full border border-arena bg-white px-3.5 py-3 text-base focus:border-carbon";
+  "mt-1.5 w-full border border-linea bg-white px-3.5 py-3 text-base focus:border-carbon";
 
 export function ContactForm() {
   const [enviado, setEnviado] = useState(false);
+  const [ramo, setRamo] = useState("");
+
+  /* Los nueve ramos sin ficha propia llegan acá con ?ramo=<slug>, así que la
+     consulta arranca encaminada en vez de con el desplegable en blanco.
+     Se lee de window y no con useSearchParams para no forzar un Suspense
+     boundary ni sacar la página del prerender estático. */
+  useEffect(() => {
+    const slug = new URLSearchParams(window.location.search).get("ramo");
+    if (!slug) return;
+    const encontrado = ramos.find((r) => r.slug === slug);
+    if (encontrado) setRamo(encontrado.nombre);
+  }, []);
 
   if (enviado) {
     return (
@@ -82,12 +94,18 @@ export function ContactForm() {
           <label htmlFor="ramo" className="font-display text-[0.9375rem] font-medium">
             Qué quiere asegurar
           </label>
-          <select id="ramo" name="ramo" defaultValue="" className={campo}>
+          <select
+            id="ramo"
+            name="ramo"
+            value={ramo}
+            onChange={(e) => setRamo(e.target.value)}
+            className={campo}
+          >
             <option value="" disabled>
               Elija una opción
             </option>
             {ramos.map((r) => (
-              <option key={r.nombre} value={r.nombre}>
+              <option key={r.slug} value={r.nombre}>
                 {r.nombre}
               </option>
             ))}

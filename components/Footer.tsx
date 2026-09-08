@@ -12,12 +12,11 @@ import { Logo } from "./Logo";
  * El teléfono va en naranja de marca y no en naranja-hondo como en su CSS
  * actual: sobre este fondo oscuro el hondo da 4.4:1 y el de marca 7.1:1.
  */
-const secundarios = [
-  // Glosario (unos 130 términos) y Links de interés quedan enlazados pero sin
-  // construir: no entran en el alcance de la demo.
-  { label: "Glosario de seguros", href: "#" },
-  { label: "Links de interés", href: "#" },
-];
+/* Glosario (unos 130 términos) y Links de interés existen en el sitio actual
+   pero no entran en el alcance de esta demo. Antes iban con href="#", que se
+   siente roto. Van como texto plano: quedan declarados en el mapa del sitio
+   sin ofrecer un click que no lleva a ningún lado. */
+const secundarios = ["Glosario de seguros", "Links de interés"];
 
 export function Footer() {
   return (
@@ -80,10 +79,8 @@ export function Footer() {
             <h2 className="text-lg">Más</h2>
             <ul className="mt-4 space-y-2.5 text-white/80">
               {secundarios.map((s) => (
-                <li key={s.label}>
-                  <a href={s.href} className="hover:text-white">
-                    {s.label}
-                  </a>
+                <li key={s} className="text-white/60">
+                  {s}
                 </li>
               ))}
               <li>

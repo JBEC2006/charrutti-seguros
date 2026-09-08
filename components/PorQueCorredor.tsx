@@ -17,7 +17,7 @@ export function PorQueCorredor() {
     <section
       id="corredor"
       aria-labelledby="corredor-titulo"
-      className="border-b border-arena bg-white"
+      className="border-b border-linea bg-white"
     >
       <div className="mx-auto max-w-[1180px] px-5 py-16 lg:px-8 lg:py-24">
         <h2 id="corredor-titulo" className="max-w-[20ch] text-[1.875rem] sm:text-[2.375rem]">
@@ -28,9 +28,12 @@ export function PorQueCorredor() {
           todos y le dice cuál le sirve. Esa es toda la diferencia.
         </p>
 
-        <dl className="mt-12 grid gap-x-16 gap-y-11 md:grid-cols-2 lg:mt-16">
+        {/* El filete superior ancla cada par al tope de su celda. Con las
+            respuestas ya emparejadas de largo, los finales quedan casi a la
+            misma altura y la grilla no deja huecos. */}
+        <dl className="mt-12 grid gap-x-16 gap-y-10 md:grid-cols-2 lg:mt-16">
           {preguntas.map((p) => (
-            <div key={p.q}>
+            <div key={p.q} className="border-t border-carbon/20 pt-6">
               <dt className="max-w-[26ch] font-display text-xl leading-[1.15]">
                 {p.q}
               </dt>

@@ -6,7 +6,7 @@
  * ajeno. Para producción: bajar charrutti-logo.png a /public y apuntar acá.
  *
  * El PNG es 299x57, paleta con transparencia. Su tinta más oscura es un gris
- * #858484: por eso el header va sobre carbón y no sobre papel. Sobre fondo
+ * #858484: por eso el header va sobre carbón y no sobre niebla. Sobre fondo
  * claro el logo se lava.
  */
 const LOGO_SRC =

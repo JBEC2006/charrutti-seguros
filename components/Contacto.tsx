@@ -1,5 +1,6 @@
-import { site, mapsHref, whatsappHref } from "@/lib/site";
+import { site, whatsappHref } from "@/lib/site";
 import { ContactForm } from "./ContactForm";
+import { Mapa } from "./Mapa";
 
 /**
  * Sección de contacto.
@@ -17,7 +18,7 @@ function Dato({
   children: React.ReactNode;
 }) {
   return (
-    <div className="border-t border-arena py-4">
+    <div className="border-t border-linea py-4">
       <h3 className="font-display text-[0.9375rem] font-medium text-carbon/70">
         {etiqueta}
       </h3>
@@ -55,7 +56,7 @@ export function Contacto() {
                   <a
                     key={t.tel}
                     href={"tel:" + t.tel}
-                    className="font-display text-lg tabular-nums hover:underline"
+                    className="-my-1.5 py-1.5 font-display text-lg tabular-nums hover:underline"
                   >
                     {t.display}
                   </a>
@@ -69,30 +70,28 @@ export function Contacto() {
               </a>
             </Dato>
 
-            <Dato etiqueta="WhatsApp">
-              <a
-                href={whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-display font-medium underline decoration-naranja decoration-2 underline-offset-4 hover:decoration-carbon"
-              >
-                Escribirnos por WhatsApp
-              </a>
-            </Dato>
+            {/* La fila de WhatsApp vuelve sola en cuanto carguemos el número
+                real en lib/site.ts. Hasta entonces no se ofrece el canal. */}
+            {whatsappHref && (
+              <Dato etiqueta="WhatsApp">
+                <a
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-display font-medium underline decoration-naranja decoration-2 underline-offset-4 hover:decoration-carbon"
+                >
+                  Escribirnos por WhatsApp
+                </a>
+              </Dato>
+            )}
 
+            {/* El "Cómo llegar" vive en la banda del mapa, abajo: acá quedaba
+                duplicado a pocos centímetros del mismo link. */}
             <Dato etiqueta="Oficina">
               <p>{site.direccion.calle}</p>
               <p>
                 {site.direccion.ciudad}, {site.direccion.pais}
               </p>
-              <a
-                href={mapsHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-1.5 inline-block font-display text-[0.9375rem] font-medium underline decoration-naranja decoration-2 underline-offset-4 hover:decoration-carbon"
-              >
-                Cómo llegar
-              </a>
             </Dato>
 
             {/* PENDIENTE: horario real de atención. */}
@@ -109,18 +108,8 @@ export function Contacto() {
 
       {/* El mapa va a todo el ancho y no dentro de la columna de datos: ahí
           quedaba como una caja alta y vacía al lado del formulario. */}
-      <div className="border-y border-arena">
-        <iframe
-          title="Mapa de la oficina de Charrutti Seguros en 26 de Marzo 3454, Montevideo"
-          src={
-            "https://www.google.com/maps?q=" +
-            encodeURIComponent(site.direccion.mapsQuery) +
-            "&z=16&output=embed"
-          }
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          className="block h-[16rem] w-full lg:h-[21rem]"
-        />
+      <div className="border-y border-linea">
+        <Mapa />
       </div>
     </section>
   );

@@ -28,6 +28,17 @@ export const metadata: Metadata = {
   description:
     "Corredor de seguros en Montevideo con más de 25 años en plaza. Cotizamos en las nueve compañías del mercado uruguayo y le recomendamos el seguro justo. Consultas al 2623 1000.",
   alternates: { canonical: "/" },
+
+  /* Esta es una demo de pitch sobre la marca de un cliente que todavía no
+     cerró. No tiene que indexarse: competiría con su sitio real y expondría
+     una propuesta comercial que aún no es pública. */
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: { index: false, follow: false },
+  },
+
   openGraph: {
     type: "website",
     locale: "es_UY",
@@ -35,6 +46,16 @@ export const metadata: Metadata = {
     title: "Charrutti Seguros — Corredor de seguros en Montevideo, Uruguay",
     description:
       "Cotizamos su seguro en todas las compañías establecidas en el Uruguay y le decimos cuál le conviene. Más de 25 años en plaza.",
+  },
+
+  /* La demo se manda por WhatsApp: la tarjeta de previsualización es lo
+     primero que ve el cliente, antes de abrir nada. Con "summary" salía una
+     tarjeta chica y gris. La imagen la toma Next de app/opengraph-image.png. */
+  twitter: {
+    card: "summary_large_image",
+    title: "Charrutti Seguros — Corredor de seguros en Montevideo, Uruguay",
+    description:
+      "Cotizamos su seguro en todas las compañías establecidas en el Uruguay y le decimos cuál le conviene.",
   },
 };
 

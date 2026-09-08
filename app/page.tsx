@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { Hero } from "@/components/Hero";
+import { Companias } from "@/components/Companias";
 import { SiniestroBand } from "@/components/SiniestroBand";
 import { SiniestroStrip } from "@/components/SiniestroStrip";
 import { RamosGrid } from "@/components/RamosGrid";
@@ -7,7 +8,7 @@ import { PorQueCorredor } from "@/components/PorQueCorredor";
 import { Trayectoria } from "@/components/Trayectoria";
 import { Contacto } from "@/components/Contacto";
 import { Footer } from "@/components/Footer";
-import { WhatsAppFab } from "@/components/WhatsAppFab";
+import { ContactoFab } from "@/components/ContactoFab";
 import { preguntas } from "@/lib/site";
 
 /* Las mismas cuatro preguntas del bloque "por qué un corredor", en JSON-LD.
@@ -30,6 +31,7 @@ export default function Home() {
       <SiniestroStrip />
       <main id="contenido">
         <Hero />
+        <Companias />
         {/* El bloque de siniestro va acá arriba a propósito: es el caso de uso
             más urgente y el que hoy está peor resuelto en el sitio. */}
         <SiniestroBand />
@@ -39,7 +41,7 @@ export default function Home() {
         <Contacto />
       </main>
       <Footer />
-      <WhatsAppFab />
+      <ContactoFab />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}

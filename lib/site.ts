@@ -7,7 +7,17 @@
 
 export const site = {
   nombre: "Charrutti Seguros",
-  url: "https://charruttiseguros.com.uy",
+  /**
+   * Dominio donde vive ESTA demo. Ojo: no es charruttiseguros.com.uy.
+   *
+   * Apuntar el canonical al sitio viejo le diría a Google que esta página es
+   * una copia de aquella, que es exactamente lo contrario de lo que queremos.
+   * Cuando el cliente cierre y esto pase a producción, acá va el dominio real.
+   */
+  url: "https://charrutti-seguros.vercel.app",
+
+  /** El sitio actual del cliente, para referencia en el código. */
+  sitioActual: "https://www.charruttiseguros.com.uy",
 
   // Verificados con el cliente.
   direccion: {
@@ -30,15 +40,21 @@ export const site = {
     ],
   },
 
-  // PENDIENTE: número real de WhatsApp. El botón nunca muestra el número,
-  // así que el placeholder no queda a la vista del cliente.
+  // PENDIENTE: número real de WhatsApp.
+  //
+  // Mientras no lo tengamos, el sitio NO promete WhatsApp en ningún lado: un
+  // wa.me con número inventado falla apenas lo tocan, y en un pitch eso se
+  // paga caro. Todo lo que iba a WhatsApp apunta al teléfono real.
+  //
+  // Cuando el cliente pase el número: poner acá el internacional sin signos
+  // (por ejemplo "59899123456") y el sitio vuelve a ofrecer WhatsApp solo.
   whatsapp: {
-    numero: "59899000000",
+    numero: null as string | null,
     mensaje: "Hola, quisiera consultar por un seguro.",
   },
 
   // PENDIENTE: horario real de atención.
-  horarios: "Lunes a viernes, horario a confirmar.",
+  horarios: "Lunes a viernes",
 
   // La web actual dice "UNIT-ISO 9001:2008". Esa versión de la norma está
   // obsoleta y no confirmamos si recertificaron, así que va sin número.
@@ -73,80 +89,117 @@ export const companias = [
   "Berkley",
   "HDI",
 ] as const;
-
 /**
- * Los diez ramos. Las descripciones son condensaciones del texto que ya está
- * en el sitio actual (una por página), con las erratas del original corregidas.
- * Solo Automóviles tiene página construida en esta demo.
+ * Los diez ramos, agrupados por a quién le sirve cada uno.
+ *
+ * Antes eran una grilla plana de diez celdas donde Automóviles ocupaba dos
+ * columnas sin que esa diferencia comunicara nada. Agrupar por audiencia
+ * —usted, su empresa, el campo— es lo que hace navegable una lista larga:
+ * el visitante se reconoce en un grupo y descarta los otros dos de un vistazo.
+ *
+ * Las descripciones son condensaciones del texto que ya está en el sitio
+ * actual (una por página), con las erratas del original corregidas, y todas
+ * recortadas para que ninguna pase de dos líneas.
+ *
+ * Solo Automóviles tiene página construida en esta demo. Las otras nueve
+ * abren el formulario de contacto con el ramo ya elegido.
  */
 export type Ramo = {
   nombre: string;
   descripcion: string;
-  href: string;
-  destacado?: boolean;
+  /** Identificador para preseleccionar el ramo en el formulario. */
+  slug: string;
+  /** Página propia, si existe. Si no, se va al formulario. */
+  href?: string;
 };
 
-export const ramos: Ramo[] = [
+export type GrupoRamos = {
+  titulo: string;
+  bajada: string;
+  ramos: Ramo[];
+};
+
+export const gruposRamos: GrupoRamos[] = [
   {
-    nombre: "Automóviles",
-    descripcion:
-      "Responsabilidad por los daños que cause a terceros, más las coberturas que elija para su vehículo.",
-    href: "/seguros/automoviles",
-    destacado: true,
+    titulo: 'Para usted y su familia',
+    bajada: 'Lo que se asegura a título personal.',
+    ramos: [
+      {
+        nombre: 'Automóviles',
+        descripcion: 'Daños a terceros, robo, choque y asistencia en la ruta.',
+        slug: 'automoviles',
+        href: '/seguros/automoviles',
+      },
+      {
+        nombre: 'Hogar',
+        descripcion: 'Incendio, robo del contenido, daños por agua y cristales.',
+        slug: 'hogar',
+      },
+      {
+        nombre: 'Vida',
+        descripcion: 'Respaldo para su familia, con planes que acumulan ahorro.',
+        slug: 'vida',
+      },
+      {
+        nombre: 'Seguro Obligatorio',
+        descripcion: 'El mínimo que la ley exige para poder circular.',
+        slug: 'soa',
+      },
+      {
+        nombre: 'Notebooks',
+        descripcion: 'Su notebook cubierta desde la factura de compra.',
+        slug: 'notebooks',
+      },
+      {
+        nombre: 'Embarcaciones',
+        descripcion: 'Cobertura Cinta Azul o Marinera para su embarcación.',
+        slug: 'embarcaciones',
+      },
+    ],
   },
   {
-    nombre: "Hogar",
-    descripcion:
-      "Robo del contenido, incendio de la edificación, daños por agua, cristales y responsabilidad civil.",
-    href: "#", // Ficha no construida en la demo.
+    titulo: 'Para su empresa',
+    bajada: 'Lo que protege la operación y a la gente que trabaja con usted.',
+    ramos: [
+      {
+        nombre: 'Industria y Comercio',
+        descripcion: 'Incendio, robo y responsabilidad civil para su empresa.',
+        slug: 'industria-y-comercio',
+      },
+      {
+        nombre: 'Accidentes de Trabajo',
+        descripcion: 'Obligatorio por la Ley 16.074 para todo empleador.',
+        slug: 'accidentes-de-trabajo',
+      },
+      {
+        nombre: 'Transporte',
+        descripcion: 'Su mercadería protegida en importación y exportación.',
+        slug: 'transporte',
+      },
+    ],
   },
   {
-    nombre: "Industria y Comercio",
-    descripcion:
-      "En una empresa hay muchos riesgos, desde que un producto se vuelva obsoleto hasta un incendio. Algunos puede transferirlos.",
-    href: "#",
-  },
-  {
-    nombre: "Vida",
-    descripcion:
-      "Cobertura de vida que además acumula ahorros, y accidentes personales y salud.",
-    href: "#",
-  },
-  {
-    nombre: "Transporte",
-    descripcion:
-      "Protege su mercadería de los daños posibles en el traslado, en importación, exportación y plaza.",
-    href: "#",
-  },
-  {
-    nombre: "Accidentes de Trabajo",
-    descripcion:
-      "Obligatorio por la Ley Nº 16.074. Protege a sus empleados ante accidentes laborales y enfermedades profesionales.",
-    href: "#",
-  },
-  {
-    nombre: "Cultivo",
-    descripcion:
-      "Granizo e incendio para su cultivo, más póliza rural y seguro forestal.",
-    href: "#",
-  },
-  {
-    nombre: "Seguro Obligatorio",
-    descripcion: "El seguro obligatorio que la ley exige para circular.",
-    href: "#",
-  },
-  {
-    nombre: "Seguro de Notebooks",
-    descripcion:
-      "Cobertura para su notebook, con activación desde la factura de compra.",
-    href: "#",
-  },
-  {
-    nombre: "Otros",
-    descripcion: "Embarcaciones, con cobertura Cinta Azul o Marinera.",
-    href: "#",
+    titulo: 'Para el campo',
+    bajada: 'Cobertura para la producción agropecuaria y forestal.',
+    ramos: [
+      {
+        nombre: 'Cultivo',
+        descripcion: 'Granizo e incendio, más póliza rural y seguro forestal.',
+        slug: 'cultivo',
+      },
+    ],
   },
 ];
+
+/** Lista plana, para el menú desplegable y el selector del formulario. */
+export const ramos: Ramo[] = gruposRamos.flatMap((g) => g.ramos);
+
+/**
+ * Link al formulario de contacto con el ramo ya seleccionado.
+ * Lo usan los nueve ramos que no tienen ficha propia en esta demo: en vez de
+ * caer en una página inexistente, llevan directo a la consulta ya encaminada.
+ */
+export const hrefConsulta = (slug: string) => `/?ramo=${slug}#contacto`;
 
 /**
  * Teléfonos de asistencia por compañía.
@@ -187,28 +240,43 @@ export const pasosSiniestro = [
  * Bloque "por qué un corredor", escrito como preguntas y respuestas para que
  * un motor de respuestas pueda citarlas enteras. Alimenta el FAQPage JSON-LD.
  */
+/* Las cuatro respuestas están escritas dentro de una banda estrecha de largo
+   (131-152 caracteres). Antes iban 194 / 84 / 67 / 159 y en la grilla 2x2 eso
+   dejaba un hueco grande: una respuesta ocupaba cinco líneas y la de al lado
+   dos. Igualar el largo del texto es lo que empareja la grilla; forzar la
+   altura de las celdas solo habría escondido el problema. */
 export const preguntas = [
   {
     q: "¿Qué hace un corredor de seguros?",
-    a: "Cotizamos su seguro en todas las compañías establecidas en el Uruguay y le presentamos las opciones comparadas, con una recomendación. Una aseguradora solo puede ofrecerle sus propios productos.",
+    a: "Cotizamos su seguro en todas las compañías establecidas en el Uruguay y le mostramos las opciones comparadas, con una recomendación. Una aseguradora solo puede ofrecerle lo suyo.",
   },
   {
     q: "¿Cuánto cuesta contratar a través de un corredor?",
-    a: "Nada para usted. Nuestro trabajo lo remunera la compañía aseguradora, no el cliente.",
+    a: "Nada para usted. Nuestro trabajo lo remunera la compañía aseguradora, no el cliente. El asesoramiento y el seguimiento del siniestro van incluidos.",
   },
   {
     q: "¿Me van a vender más cobertura de la que necesito?",
-    a: "No. Buscamos el seguro justo, sin sobredimensionar sus necesidades.",
+    a: "No. Buscamos el seguro justo, sin sobredimensionar sus necesidades: le explicamos qué cubre cada opción y cuál conviene dejar afuera.",
   },
   {
     q: "¿Quién me ayuda si tengo un siniestro?",
-    a: "Nosotros. Puede hacer la denuncia contactándose con nuestras oficinas al 2623 1668 o al 2623 1714, y seguimos el trámite con la compañía hasta que se resuelva.",
+    a: "Nosotros. Haga la denuncia llamando a nuestras oficinas al 2623 1668 o al 2623 1714, y seguimos el trámite con la compañía hasta que se resuelva.",
   },
 ];
 
-export const whatsappHref = `https://wa.me/${site.whatsapp.numero}?text=${encodeURIComponent(
-  site.whatsapp.mensaje,
-)}`;
+/**
+ * Devuelve el link de WhatsApp solo si hay número real cargado.
+ * Si no lo hay, devuelve null y quien lo use tiene que caer al teléfono.
+ * Así no existe la posibilidad de publicar un wa.me roto.
+ */
+export const whatsappHref = site.whatsapp.numero
+  ? `https://wa.me/${site.whatsapp.numero}?text=${encodeURIComponent(
+      site.whatsapp.mensaje,
+    )}`
+  : null;
+
+/** El canal de contacto inmediato que sí funciona hoy. */
+export const telHref = `tel:${site.telefonos.central.tel}`;
 
 export const mapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
   site.direccion.mapsQuery,
