@@ -145,7 +145,7 @@ export function SelectorRamo({
           role="listbox"
           aria-label="Qué quiere asegurar"
           tabIndex={-1}
-          className="absolute left-0 right-0 top-[calc(100%+0.4rem)] z-30 max-h-[19rem] overflow-y-auto border-t-2 border-naranja bg-white py-1.5 shadow-[0_18px_44px_-14px_rgba(34,30,26,.45)]"
+          className="aparece absolute left-0 right-0 top-[calc(100%+0.4rem)] z-30 max-h-[19rem] overflow-y-auto border-t-2 border-naranja bg-white py-1.5 shadow-[0_18px_44px_-14px_rgba(34,30,26,.45)]"
         >
           {gruposRamos.map((grupo) => (
             <li key={grupo.titulo} role="presentation">

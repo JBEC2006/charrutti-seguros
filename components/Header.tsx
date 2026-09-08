@@ -196,20 +196,26 @@ export function Header() {
                 </svg>
               </button>
               {dropAbierto && (
-                <div className="absolute left-1/2 top-[calc(100%+0.95rem)] w-[18rem] -translate-x-1/2 border-t-2 border-naranja bg-white py-2 text-carbon shadow-[0_18px_44px_-14px_rgba(34,30,26,.5)]">
-                  <ul>
-                    {ramos.map((r) => (
-                      <li key={r.nombre}>
-                        <Link
-                          href={r.href ?? hrefConsulta(r.slug)}
-                          onClick={() => setDropAbierto(false)}
-                          className="block px-5 py-2 font-display text-[0.9375rem] font-medium hover:bg-niebla"
-                        >
-                          {r.nombre}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                /* Dos divs y no uno: el de afuera centra con -translate-x-1/2,
+                   el de adentro se anima. Si la animación viviera en el mismo
+                   elemento, su `transform` pisaría al del centrado y el panel
+                   quedaría corrido media pantalla a la derecha. */
+                <div className="absolute left-1/2 top-[calc(100%+0.95rem)] w-[18rem] -translate-x-1/2">
+                  <div className="aparece border-t-2 border-naranja bg-white py-2 text-carbon shadow-[0_18px_44px_-14px_rgba(34,30,26,.5)]">
+                    <ul>
+                      {ramos.map((r) => (
+                        <li key={r.nombre}>
+                          <Link
+                            href={r.href ?? hrefConsulta(r.slug)}
+                            onClick={() => setDropAbierto(false)}
+                            className="block px-5 py-2 font-display text-[0.9375rem] font-medium hover:bg-niebla"
+                          >
+                            {r.nombre}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               )}
             </li>
@@ -285,7 +291,7 @@ export function Header() {
           role="dialog"
           aria-modal="true"
           aria-label="Menú"
-          className="fixed inset-x-0 bottom-0 top-[3.75rem] z-40 flex flex-col overflow-y-auto bg-carbon px-5 pb-10 lg:hidden"
+          className="aparece-panel fixed inset-x-0 bottom-0 top-[3.75rem] z-40 flex flex-col overflow-y-auto bg-carbon px-5 pb-10 lg:hidden"
         >
           <nav aria-label="Principal" className="mt-6">
             <ul className="font-display text-xl">

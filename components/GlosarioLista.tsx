@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { glosario, inicial, normalizar, letrasGlosario } from "@/lib/glosario";
+import { scrollSuaveA } from "@/lib/movimiento";
 import { PendienteInline } from "./Pendiente";
 
 /**
@@ -22,6 +23,36 @@ import { PendienteInline } from "./Pendiente";
  */
 export function GlosarioLista() {
   const [busqueda, setBusqueda] = useState("");
+
+  /* La letra a la que acabamos de saltar, para marcarla al llegar. Se limpia
+     sola: si quedara puesta, el destello sería un estado permanente y dejaría
+     de significar "es acá". */
+  const [letraDestacada, setLetraDestacada] = useState<string | null>(null);
+  const temporizador = useRef<number | undefined>(undefined);
+
+  useEffect(() => () => window.clearTimeout(temporizador.current), []);
+
+  function irALetra(e: React.MouseEvent<HTMLAnchorElement>, letra: string) {
+    const destino = document.getElementById(`letra-${letra}`);
+    if (!destino) return; // sin JS o sin destino, que el navegador haga lo suyo
+
+    e.preventDefault();
+    scrollSuaveA(destino);
+
+    /* El hash se actualiza igual, sin recargar ni saltar: así el link se puede
+       copiar y compartir, que es la mitad de la gracia de un índice. */
+    window.history.replaceState(null, "", `#letra-${letra}`);
+
+    setLetraDestacada(null);
+    window.clearTimeout(temporizador.current);
+    // Un cuadro de espera para que React saque y vuelva a poner la clase; sin
+    // esto, tocar dos veces la misma letra no reinicia la animación.
+    requestAnimationFrame(() => setLetraDestacada(letra));
+    temporizador.current = window.setTimeout(
+      () => setLetraDestacada(null),
+      1400,
+    );
+  }
 
   const filtrados = useMemo(() => {
     const q = normalizar(busqueda.trim());
@@ -86,6 +117,7 @@ export function GlosarioLista() {
                   {activa ? (
                     <a
                       href={`#letra-${l}`}
+                      onClick={(e) => irALetra(e, l)}
                       className="flex h-9 w-9 items-center justify-center border border-linea font-display text-[0.9375rem] font-medium hover:border-carbon hover:bg-carbon hover:text-white"
                     >
                       {l}
@@ -127,14 +159,28 @@ export function GlosarioLista() {
                   letra al saltar desde el índice. */}
               <h2
                 id={`letra-${letra}`}
-                className="scroll-mt-28 border-b-2 border-carbon pb-2 font-display text-[1.875rem]"
+                className={
+                  "scroll-mt-28 border-b-2 border-carbon pb-2 font-display text-[1.875rem]" +
+                  (letraDestacada === letra ? " destello" : "")
+                }
               >
                 {letra}
               </h2>
 
-              <dl className="mt-7 grid gap-x-16 gap-y-8 md:grid-cols-2">
-                {terminos.map((t) => (
-                  <div key={t.termino} className="border-t border-carbon/15 pt-5">
+              {/* El escalonado corre también al filtrar: mientras se escribe en
+                  el buscador, los resultados que quedan entran de a uno en vez
+                  de reaparecer de golpe. La `key` con la búsqueda es lo que
+                  hace que React rearme la lista y la animación vuelva a correr. */}
+              <dl
+                key={busqueda}
+                className="escalonado mt-7 grid gap-x-16 gap-y-8 md:grid-cols-2"
+              >
+                {terminos.map((t, i) => (
+                  <div
+                    key={t.termino}
+                    style={{ "--i": i } as React.CSSProperties}
+                    className="border-t border-carbon/15 pt-5"
+                  >
                     <dt className="font-display text-lg leading-tight">
                       {t.termino}
                     </dt>

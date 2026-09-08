@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { site, pasosSiniestro, pasosSiniestroCompletos } from "@/lib/site";
+import { animarAlto } from "@/lib/movimiento";
 
 /**
  * El único momento fuerte de la página.
@@ -29,6 +30,25 @@ import { site, pasosSiniestro, pasosSiniestroCompletos } from "@/lib/site";
  */
 export function SiniestroBand() {
   const [verTodos, setVerTodos] = useState(false);
+
+  /* La lista pasa de cuatro ítems a nueve. Sin animar, el bloque de al lado
+     pega un salto de golpe y la página entera se reacomoda de un cuadro al
+     otro: se siente como si algo se hubiera roto, no como que se desplegó.
+
+     animarAlto mide el alto real y lo transiciona, porque `height: auto` no
+     es animable. Ver lib/movimiento.ts. */
+  const caja = useRef<HTMLDivElement>(null);
+  const primeraVez = useRef(true);
+
+  useEffect(() => {
+    // En el primer render no hay nada que animar: es el estado inicial.
+    if (primeraVez.current) {
+      primeraVez.current = false;
+      return;
+    }
+    if (!caja.current) return;
+    return animarAlto(caja.current, true);
+  }, [verTodos]);
 
   return (
     <section
@@ -75,37 +95,44 @@ export function SiniestroBand() {
             {verTodos ? "Los nueve pasos" : "Mientras tanto"}
           </h3>
 
-          {verTodos ? (
-            /* La lista real de /siniestro.html, completa y en su orden. */
-            <ol className="mt-4">
-              {pasosSiniestroCompletos.map((paso, i) => (
-                <li
-                  key={paso}
-                  className="flex gap-4 border-t border-white/20 py-3 last:border-b"
-                >
-                  <span className="shrink-0 font-display text-lg tabular-nums text-naranja">
-                    {i + 1}
-                  </span>
-                  <span className="leading-snug">{paso}</span>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            /* Lo esencial de los primeros minutos, sin numerar: son los pasos
-               1, 4, 7 y 9 de la lista de arriba, y numerarlos 1-2-3-4 haría
-               parecer que la secuencia completa es de cuatro. */
-            <ul className="mt-4">
-              {pasosSiniestro.map((paso) => (
-                <li
-                  key={paso}
-                  className="flex gap-4 border-t border-white/20 py-3.5 last:border-b"
-                >
-                  <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 bg-naranja" />
-                  <span className="leading-snug">{paso}</span>
-                </li>
-              ))}
-            </ul>
-          )}
+          {/* El ref va acá, en el contenedor: es lo que se mide y se anima.
+              La `key` cambia con el estado para que React rearme la lista y el
+              escalonado de los ítems vuelva a correr en cada despliegue. */}
+          <div ref={caja}>
+            {verTodos ? (
+              /* La lista real de /siniestro.html, completa y en su orden. */
+              <ol key="todos" className="escalonado mt-4">
+                {pasosSiniestroCompletos.map((paso, i) => (
+                  <li
+                    key={paso}
+                    style={{ "--i": i } as React.CSSProperties}
+                    className="flex gap-4 border-t border-white/20 py-3 last:border-b"
+                  >
+                    <span className="shrink-0 font-display text-lg tabular-nums text-naranja">
+                      {i + 1}
+                    </span>
+                    <span className="leading-snug">{paso}</span>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              /* Lo esencial de los primeros minutos, sin numerar: son los pasos
+                 1, 4, 7 y 9 de la lista de arriba, y numerarlos 1-2-3-4 haría
+                 parecer que la secuencia completa es de cuatro. */
+              <ul key="esencial" className="escalonado mt-4">
+                {pasosSiniestro.map((paso, i) => (
+                  <li
+                    key={paso}
+                    style={{ "--i": i } as React.CSSProperties}
+                    className="flex gap-4 border-t border-white/20 py-3.5 last:border-b"
+                  >
+                    <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 bg-naranja" />
+                    <span className="leading-snug">{paso}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
           <div className="mt-5 flex flex-wrap items-center gap-x-7 gap-y-3">
             <button

@@ -249,18 +249,110 @@
       Por eso hay un <button> real en components/Companias.tsx. Sin ese botón
       esta decisión incumpliría un criterio de nivel A. NO SACAR EL BOTÓN.
 
-   3. EL SCROLL SUAVE: se sigue respetando.
-      Un salto largo con scroll animado recorre la pantalla entera y es de lo
-      que más marea. No aporta nada al pitch y se apaga sin costo.
+   3. EL SCROLL AL SALTAR A UNA SECCIÓN: se anima siempre, pero acotado.
+      Antes se apagaba con la preferencia. El resultado era que el índice A-Z
+      del glosario "caía derecho" en unas máquinas y viajaba suave en otras.
+      Ahora los saltos importantes pasan por scrollSuaveA() (lib/movimiento.ts),
+      que topea la duración en 720ms sin importar la distancia y se cancela
+      apenas la persona toca la rueda o la pantalla.
+      Esa cota es justamente lo que hace la diferencia: lo que marea de un
+      scroll animado es el viaje de varios segundos del comportamiento nativo,
+      no el desplazamiento en sí.
 
    Las transiciones de hover (200ms de color) ya no se tocan: son respuesta a
    una acción del usuario, no movimiento autónomo, y no desplazan nada.
+
+   Por eso este archivo ya no tiene bloque @media (prefers-reduced-motion).
+   No es un olvido: es la decisión de arriba, y el botón de pausa del desfile
+   es la contrapartida que la sostiene.
 --------------------------------------------------------------------------- */
 
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+/* ---------------------------------------------------------------------------
+   APARICIONES.
+
+   Todo lo que se despliega al tocar algo entra igual: sube 6px y se funde,
+   en 260ms con la curva de la casa. Un panel que aparece de golpe se siente
+   como un error de render; uno que entra se siente como una respuesta.
+
+   Se usa en el desplegable "Seguros" del header, en el selector de ramo del
+   formulario y en el panel del menú móvil.
+--------------------------------------------------------------------------- */
+
+@keyframes aparece {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
   }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.aparece {
+  animation: aparece 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* El panel móvil ocupa la pantalla entera: 6px de recorrido no se notarían.
+   Entra desde más abajo y un toque más lento. */
+@keyframes aparece-panel {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.aparece-panel {
+  animation: aparece-panel 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ---------------------------------------------------------------------------
+   DESTELLO DE LLEGADA.
+
+   Cuando el índice A-Z del glosario te deja en una letra, esa letra se marca
+   por un segundo y vuelve a la normalidad. Sin esto, después de un scroll de
+   9000px uno aterriza sin saber si llegó al lugar correcto.
+
+   Es el mismo gesto que hace un corredor cuando te muestra la planilla y te
+   señala con el dedo dónde mirar. Y es la razón por la que el naranja está
+   reservado: cuando aparece, significa algo.
+--------------------------------------------------------------------------- */
+
+@keyframes destello {
+  0%,
+  55% {
+    border-bottom-color: var(--color-naranja);
+    color: var(--color-naranja-hondo);
+  }
+  100% {
+    border-bottom-color: var(--color-carbon);
+    color: var(--color-carbon);
+  }
+}
+
+.destello {
+  animation: destello 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   ESCALONADO DE LISTAS.
+
+   Los ítems de una lista que se despliega no aparecen todos juntos: entran de
+   a uno, con 45ms de diferencia. Es lo que convierte "apareció un bloque" en
+   "se está desplegando una lista".
+
+   El tope de 8 items es a propósito: con más, el último tardaría casi medio
+   segundo en aparecer y se sentiría lento en vez de prolijo. De ahí en más
+   entran todos juntos.
+--------------------------------------------------------------------------- */
+
+.escalonado > * {
+  animation: aparece 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(min(var(--i, 0), 8) * 45ms);
 }
 
 /* ---------------------------------------------------------------------------
