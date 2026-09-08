@@ -163,17 +163,20 @@ export const gruposRamos: GrupoRamos[] = [
     ramos: [
       {
         nombre: 'Industria y Comercio',
-        descripcion: 'Incendio, robo y responsabilidad civil para su empresa.',
+        // Su propia idea, textual de /seguros-industria-y-comercio.html:
+        // "Ud. ya tiene muchos riesgos, muchos de los cuales son inevitables,
+        // pero otros pueden ser transferidos a una Compañía de Seguros."
+        descripcion: 'Muchos riesgos de su empresa son inevitables. Otros puede transferirlos.',
         slug: 'industria-y-comercio',
       },
       {
         nombre: 'Accidentes de Trabajo',
-        descripcion: 'Obligatorio por la Ley 16.074 para todo empleador.',
+        descripcion: 'Obligatorio por la Ley 16.074. Se contrata en el Banco de Seguros.',
         slug: 'accidentes-de-trabajo',
       },
       {
         nombre: 'Transporte',
-        descripcion: 'Su mercadería protegida en importación y exportación.',
+        descripcion: 'Importación y exportación de mercadería, en todos los medios de transporte.',
         slug: 'transporte',
       },
     ],
@@ -256,7 +259,10 @@ export const preguntas = [
   },
   {
     q: "¿Me van a vender más cobertura de la que necesito?",
-    a: "No. Buscamos el seguro justo, sin sobredimensionar sus necesidades: le explicamos qué cubre cada opción y cuál conviene dejar afuera.",
+    // Cierre textual de /nosotros.html: "ofrecerle el seguro justo, sin
+    // sobredimensionar sus necesidades. Para que usted invierta en seguros
+    // solo lo óptimo y necesario."
+    a: "No. Nuestro objetivo es ofrecerle el seguro justo, sin sobredimensionar sus necesidades, para que invierta en seguros solo lo óptimo y necesario.",
   },
   {
     q: "¿Quién me ayuda si tengo un siniestro?",

@@ -122,9 +122,21 @@ export default function Automoviles() {
             <h2 id="cubre-titulo" className="text-[1.875rem] sm:text-[2.375rem]">
               Qué cubre
             </h2>
-            <p className="mt-4 max-w-[52ch] text-lg">
-              Una póliza de auto se arma por partes. Estas son las que conviene
-              tener claras antes de comparar precios.
+            {/* Este párrafo es de ellos. En /seguros-automoviles.html está bajo
+                el título "¿Qué es un seguro para el auto y para qué lo
+                necesita?" y dice: "Tener un auto implica ser responsable de los
+                daños que puede causar Ud. u otras personas cuando manejan su
+                auto. Si ocurre un accidente puede quedar expuesto a reclamos de
+                terceros y esto provocarle pérdidas económicas importantes. Al
+                contratar un seguro para el auto, transfiere estos riesgos a una
+                Compañia de Seguros, protegiendo su patrimonio e intereses."
+                Acá va con la errata corregida y algo más llano. */}
+            <p className="mt-4 max-w-[58ch] text-lg">
+              Tener un auto implica ser responsable de los daños que pueda
+              causar usted u otra persona que lo maneje. Si ocurre un accidente,
+              queda expuesto a reclamos de terceros que pueden significar
+              pérdidas importantes. Al contratar el seguro, esos riesgos pasan a
+              la compañía y su patrimonio queda protegido.
             </p>
 
             <dl className="mt-12 grid gap-x-16 gap-y-10 md:grid-cols-2">

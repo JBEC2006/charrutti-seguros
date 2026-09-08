@@ -35,6 +35,15 @@ export function Trayectoria() {
               deja conseguirle las mejores condiciones de contratación, con
               asesoramiento personalizado también después de la venta.
             </p>
+            {/* Cierre de /nosotros.html, casi textual: "cuando se trata de su
+                seguridad, es fundamental conocer la experiencia de la empresa a
+                la cual usted le va a confiar su capital" + "encontrará en
+                nosotros gente en quién confiar". */}
+            <p className="mt-4 max-w-[42ch] leading-relaxed text-white/85">
+              Cuando se trata de su seguridad, importa conocer la experiencia de
+              la empresa a la que le va a confiar su capital. Va a encontrar en
+              nosotros gente en quién confiar.
+            </p>
           </div>
 
           <div className="lg:col-span-6 lg:col-start-7">
@@ -46,6 +55,19 @@ export function Trayectoria() {
               póliza cuando cambian sus necesidades o las condiciones del
               mercado, y si algo falla lo corregimos y dejamos constancia para
               que no se repita.
+            </p>
+
+            {/* Servicio concreto que figura en /nosotros.html y que no estaba
+                en ningún lado de la demo: "Emisión de certificados para
+                despacho (Importación y Exportación) en forma electrónica e
+                inmediata, a los efectos de agilitar vuestra tramitación ante
+                los organismos competentes". Es de lo poco medible que
+                diferencia a un corredor con oficina de uno independiente. */}
+            <h3 className="mt-8 text-lg">Certificados de despacho</h3>
+            <p className="mt-3 max-w-[48ch] leading-relaxed text-white/85">
+              Emitimos los certificados de importación y exportación de forma
+              electrónica e inmediata, para que el trámite ante los organismos
+              no le frene la operación.
             </p>
           </div>
         </div>
