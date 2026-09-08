@@ -49,9 +49,14 @@ export function GlosarioLista() {
   return (
     <>
       <div className="mt-10 border-y border-linea bg-white px-5 py-6 lg:px-7">
+        {/* `block` no es opcional acá. Un <label> es inline por defecto, y el
+            input de abajo lleva max-w-[26rem]: al no ocupar el ancho completo,
+            entraba en la misma línea y se montaba sobre el texto del label.
+            En el formulario de contacto el mismo patrón no falla solo porque
+            ahí los campos son w-full sin tope y no les queda lugar al lado. */}
         <label
           htmlFor="buscar-termino"
-          className="font-display text-[0.9375rem] font-medium"
+          className="block font-display text-[0.9375rem] font-medium"
         >
           Buscar un término
         </label>
