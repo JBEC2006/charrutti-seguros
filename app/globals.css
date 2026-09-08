@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Paleta de Charrutti.
+
+   Extraída del CSS del sitio actual (/assets/css/style.css). No es una
+   identidad nueva: es la que ya tienen, ordenada.
+
+     #EE9714  a.rounded-link, li.active > a, a.siniestro-banner
+     #E46613  footer .phone  (usamos #DF5911, del degrade del propio logo:
+                       el original da 3.00:1 sobre papel y no llega al minimo)
+     #333     footer background
+
+   Se descarta el verde #51a351 de su CSS: es el btn-success de fábrica de
+   Bootstrap 2 (el sitio usa .navbar .navbar-inner), no una decisión de marca.
+
+   Reglas de contraste, medidas:
+     naranja sobre claro          2.2:1  → NUNCA texto. Solo superficie.
+     carbon sobre naranja         6.9:1  → cuerpo, cómodo.
+     naranja-hondo sobre blanco   3.6:1  → solo texto grande (teléfonos).
+     carbon sobre papel          ~15:1
+--------------------------------------------------------------------------- */
+
+@theme {
+  --color-naranja: #ee9714;
+  --color-naranja-hondo: #df5911;
+  --color-carbon: #221e1a;
+  --color-papel: #f3f1ed;
+  --color-arena: #e3ded6;
+
+  --font-display: var(--font-archivo), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-source-serif), ui-serif, Georgia, serif;
+
+  /* Cuarta justa (1.333), desde 17px. */
+  --text-base: 1.0625rem; /* 17 */
+  --text-lg: 1.375rem; /* 22 */
+  --text-xl: 1.875rem; /* 30 */
+  --text-2xl: 2.5rem; /* 40 */
+  --text-3xl: 3.3125rem; /* 53 */
+  --text-4xl: 4.4375rem; /* 71 */
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* El header sticky no debe tapar la sección a la que se salta. */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-papel);
+    color: var(--color-carbon);
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  th,
+  button {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  /* Foco visible en todo el sitio. Nunca outline:none a secas. */
+  :focus-visible {
+    outline: 2px solid var(--color-carbon);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Sobre superficies naranjas o carbón, el anillo se invierte. */
+  .sobre-naranja :focus-visible {
+    outline-color: var(--color-carbon);
+  }
+  .sobre-carbon :focus-visible {
+    outline-color: #fff;
+  }
+
+  ::selection {
+    background-color: var(--color-naranja);
+    color: var(--color-carbon);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   El único momento de movimiento del sitio: la hoja comparativa del hero se
+   arma sola al cargar. Nada más se anima en toda la página.
+--------------------------------------------------------------------------- */
+
+@keyframes fila-entra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes traza-circulo {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.hoja-fila {
+  opacity: 0;
+  animation: fila-entra 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--i) * 60ms + 250ms);
+}
+
+.hoja-circulo {
+  stroke-dasharray: 340;
+  stroke-dashoffset: 340;
+  animation: traza-circulo 0.7s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  animation-delay: 620ms;
+}
+
+.hoja-nota {
+  opacity: 0;
+  animation: fila-entra 0.5s ease-out forwards;
+  animation-delay: 1050ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hoja-fila,
+  .hoja-nota {
+    opacity: 1;
+    animation: none;
+  }
+
+  .hoja-circulo {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
