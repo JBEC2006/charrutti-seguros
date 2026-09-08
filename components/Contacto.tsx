@@ -104,12 +104,14 @@ export function Contacto() {
             <ContactForm />
           </div>
         </div>
-      </div>
 
-      {/* El mapa va a todo el ancho y no dentro de la columna de datos: ahí
-          quedaba como una caja alta y vacía al lado del formulario. */}
-      <div className="border-y border-linea">
-        <Mapa />
+        {/* El mapa va debajo, a todo el ancho del contenedor, no dentro de la
+            columna de datos: ahí quedaba una caja alta y vacía al lado del
+            formulario. Antes vivía afuera de este contenedor, a sangre —por
+            eso se veía como un cartel gris suelto en vez de parte del diseño. */}
+        <div className="mt-10">
+          <Mapa />
+        </div>
       </div>
     </section>
   );
