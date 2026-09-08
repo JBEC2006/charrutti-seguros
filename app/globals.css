@@ -166,6 +166,37 @@
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Las tres barritas del menú móvil se transforman en una X.
+
+   Es movimiento como respuesta a una acción, que es el único permitido fuera
+   del hero. Las dos barras exteriores se juntan en el centro y giran; la del
+   medio se achica y se va. 240ms, misma curva amortiguada que el resto.
+
+   transform-box: fill-box hace que cada línea gire sobre su propio centro y
+   no sobre el origen del SVG.
+--------------------------------------------------------------------------- */
+.hamburguesa line {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 140ms ease;
+}
+
+.hamburguesa[data-abierto="true"] line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburguesa[data-abierto="true"] line:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0.3);
+}
+
+.hamburguesa[data-abierto="true"] line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
 .hoja-fila {
   opacity: 0;
   /* easeOutQuint: frena sin pasarse de largo. */
@@ -209,5 +240,60 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Desfile de compañías.
+
+   Las nueve avanzan de derecha a izquierda en una sola línea. En un teléfono
+   no entran las nueve a la vez, y apilarlas en varias filas las convertía en
+   una lista; en movimiento se leen como lo que son: un respaldo que sigue.
+
+   La pista lleva dos copias idénticas del grupo y se desplaza exactamente
+   -50%, así el corte cae justo donde empieza la segunda copia y el ciclo no
+   tiene salto.
+
+   Se frena al pasar el mouse por encima, para poder leerlas.
+--------------------------------------------------------------------------- */
+
+@keyframes desfile {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.desfile-pista {
+  display: flex;
+  width: max-content;
+  animation: desfile 38s linear infinite;
+}
+
+.desfile:hover .desfile-pista,
+.desfile:focus-within .desfile-pista {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Sin movimiento, la pista se convierte en una lista centrada que envuelve,
+     y la copia duplicada se oculta para no repetir las compañías. */
+  .desfile-pista {
+    animation: none;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .desfile-pista [data-copia="2"] {
+    display: none;
+  }
+
+  .desfile-pista [data-copia="1"] {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-right: 0;
   }
 }

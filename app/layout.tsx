@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Source_Serif_4 } from "next/font/google";
 import { site, companias, ramos } from "@/lib/site";
+import { ScrollAlTope } from "@/components/ScrollAlTope";
 import "./globals.css";
 
 /* Archivo: grotesca de Omnibus-Type (Buenos Aires). Es la voz del sitio.
@@ -100,6 +101,7 @@ export default function RootLayout({
         >
           Ir al contenido
         </a>
+        <ScrollAlTope />
         {children}
         <script
           type="application/ld+json"

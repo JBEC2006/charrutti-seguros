@@ -114,16 +114,22 @@ export function Header() {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  // El panel móvil atrapa el foco mientras está abierto.
+  /* El panel móvil atrapa el foco mientras está abierto.
+     El botón que cierra ahora vive en la barra, fuera del panel, así que va
+     incluido a mano en el ciclo: si no, con teclado no habría forma de
+     llegar a cerrar el menú. */
   useEffect(() => {
     if (!menuAbierto) return;
     document.body.style.overflow = "hidden";
     const panel = panelRef.current;
-    const focusables = panel?.querySelectorAll<HTMLElement>("a, button");
-    focusables?.[0]?.focus();
+    const focusables = [
+      ...(botonMenuRef.current ? [botonMenuRef.current] : []),
+      ...Array.from(panel?.querySelectorAll<HTMLElement>("a, button") ?? []),
+    ];
+    focusables[0]?.focus();
 
     function onKeydown(e: KeyboardEvent) {
-      if (e.key !== "Tab" || !focusables || focusables.length === 0) return;
+      if (e.key !== "Tab" || focusables.length === 0) return;
       const primero = focusables[0];
       const ultimo = focusables[focusables.length - 1];
       if (e.shiftKey && document.activeElement === primero) {
@@ -134,10 +140,12 @@ export function Header() {
         primero.focus();
       }
     }
-    panel?.addEventListener("keydown", onKeydown);
+    /* Va en document y no en el panel: el boton que cierra esta fuera del
+       panel, asi que un listener sobre el panel no veria su Tab. */
+    document.addEventListener("keydown", onKeydown);
     return () => {
       document.body.style.overflow = "";
-      panel?.removeEventListener("keydown", onKeydown);
+      document.removeEventListener("keydown", onKeydown);
     };
   }, [menuAbierto]);
 
@@ -147,6 +155,7 @@ export function Header() {
         {/* -my-1.5 py-1.5: agranda el area tactil a 44px sin crecer el header. */}
         <Link
           href="/"
+          onClick={irAlInicio}
           className="-my-1.5 shrink-0 py-1.5"
           aria-label="Charrutti Seguros, inicio"
         >
@@ -232,22 +241,39 @@ export function Header() {
             Área de Clientes
           </a>
 
+          {/* Un solo botón que alterna. Antes eran dos —la hamburguesa acá y
+              una X adentro del panel—, y entre dos elementos distintos no hay
+              transformación posible: uno desaparece y aparece el otro. */}
           <button
             ref={botonMenuRef}
             type="button"
-            onClick={() => setMenuAbierto(true)}
+            onClick={() => setMenuAbierto((v) => !v)}
             aria-expanded={menuAbierto}
             aria-controls="menu-movil"
             className="-mr-2 flex h-11 w-11 items-center justify-center lg:hidden"
           >
-            <span className="sr-only">Abrir menú</span>
-            <svg width="24" height="16" viewBox="0 0 24 16" aria-hidden="true">
-              <path d="M0 1h24M0 8h24M0 15h24" stroke="currentColor" strokeWidth="2" />
+            <span className="sr-only">
+              {menuAbierto ? "Cerrar menú" : "Abrir menú"}
+            </span>
+            <svg
+              width="24"
+              height="16"
+              viewBox="0 0 24 16"
+              aria-hidden="true"
+              className="hamburguesa"
+              data-abierto={menuAbierto}
+            >
+              <line x1="0" y1="1" x2="24" y2="1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <line x1="0" y1="8" x2="24" y2="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <line x1="0" y1="15" x2="24" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </button>
         </div>
       </div>
 
+      {/* El panel arranca abajo de la barra (3.75rem = alto real en movil) y
+          va en z-40, para que la barra con el logo y el boton-X queden
+          visibles encima. Antes el panel tapaba todo y repetia ambos. */}
       {menuAbierto && (
         <div
           id="menu-movil"
@@ -255,27 +281,10 @@ export function Header() {
           role="dialog"
           aria-modal="true"
           aria-label="Menú"
-          className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-carbon px-5 pb-10 pt-3.5 lg:hidden"
+          className="fixed inset-x-0 bottom-0 top-[3.75rem] z-40 flex flex-col overflow-y-auto bg-carbon px-5 pb-10 lg:hidden"
         >
-          <div className="flex items-center">
-            <Logo className="h-8 w-auto" />
-            <button
-              type="button"
-              onClick={() => {
-                setMenuAbierto(false);
-                botonMenuRef.current?.focus();
-              }}
-              className="-mr-2 ml-auto flex h-11 w-11 items-center justify-center"
-            >
-              <span className="sr-only">Cerrar menú</span>
-              <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
-                <path d="M1 1l18 18M19 1L1 19" stroke="currentColor" strokeWidth="2" />
-              </svg>
-            </button>
-          </div>
-
-          <nav aria-label="Principal" className="mt-8">
-            <ul className="font-display text-2xl">
+          <nav aria-label="Principal" className="mt-6">
+            <ul className="font-display text-xl">
               {nav.map((n) => (
                 <li key={n.href} className="border-b border-white/15">
                   <Link

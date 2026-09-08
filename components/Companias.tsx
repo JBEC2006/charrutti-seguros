@@ -1,48 +1,70 @@
 import { companias } from "@/lib/site";
 
 /**
- * Las nueve compañías, como franja de marcas.
+ * Las nueve compañías, en desfile continuo.
  *
- * Antes vivían como una lista de texto corrida dentro del bloque oscuro de
- * trayectoria, al final de la página. Es el argumento más persuasivo que tiene
- * un corredor —"no le ofrezco lo mío, le busco entre todas"— y estaba
- * renderizado como lista de supermercado, después de que el visitante ya
- * decidió si le importaba o no.
+ * Antes eran una lista estática al lado de una etiqueta. En un teléfono no
+ * entran las nueve en una línea, así que envolvían en varias filas y volvían
+ * a leerse como lista de supermercado, que es justo lo que queríamos evitar.
  *
- * Ahora va inmediatamente debajo del hero: el titular promete que comparamos
- * todas las compañías y acá abajo están, con nombre y apellido.
+ * En movimiento se leen como lo que son: un respaldo que sigue y sigue. La
+ * etiqueta pasa arriba y centrada, y la franja va a todo el ancho —de las
+ * pocas cosas que justifican salirse del contenedor, porque el sentido es
+ * "hay más de las que entran en pantalla"—.
  *
  * PENDIENTE: son marcas de texto, no logos. Cuando el cliente pase los
- * archivos reales, se reemplaza cada <span> por el logo en monocromo (un solo
- * color, no los originales a todo color, para que la franja lea como conjunto
- * y no como una feria). Los PNG del sitio actual NO se hotlinkean.
+ * archivos reales, se reemplaza cada <li> por el logo en monocromo, para que
+ * la franja lea como conjunto y no como una feria de colores. Los PNG del
+ * sitio actual NO se hotlinkean.
  */
+function Grupo({ copia }: { copia: 1 | 2 }) {
+  return (
+    <ul
+      data-copia={copia}
+      aria-hidden={copia === 2}
+      className="flex shrink-0 items-center gap-x-10 pr-10 sm:gap-x-14 sm:pr-14"
+    >
+      {companias.map((c) => (
+        <li
+          key={c}
+          className="whitespace-nowrap font-display text-lg font-medium tracking-tight text-carbon/75"
+        >
+          {c}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export function Companias() {
   return (
     <section
       aria-labelledby="companias-titulo"
-      className="border-b border-linea bg-white"
+      className="border-b border-linea bg-white py-8 lg:py-10"
     >
-      <div className="mx-auto max-w-[1180px] px-5 py-9 lg:px-8 lg:py-11">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:gap-12">
-          <h2
-            id="companias-titulo"
-            className="max-w-[16ch] shrink-0 font-display text-[0.9375rem] font-medium leading-snug text-carbon/70 lg:max-w-[15ch]"
-          >
-            Cotizamos su seguro en estas nueve compañías
-          </h2>
+      <h2
+        id="companias-titulo"
+        className="px-5 text-center font-display text-[0.9375rem] font-medium text-carbon/70"
+      >
+        Cotizamos su seguro en estas nueve compañías
+      </h2>
 
-          <ul className="flex flex-wrap items-center gap-x-8 gap-y-4 lg:gap-x-10">
-            {companias.map((c) => (
-              <li
-                key={c}
-                className="font-display text-lg font-medium tracking-tight text-carbon/75"
-              >
-                {c}
-              </li>
-            ))}
-          </ul>
+      <div className="desfile relative mt-6 overflow-hidden">
+        <div className="desfile-pista">
+          <Grupo copia={1} />
+          <Grupo copia={2} />
         </div>
+
+        {/* Los bordes se desvanecen contra el blanco de la sección, para que
+            las compañías entren y salgan en vez de cortarse de golpe. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent sm:w-20"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent sm:w-20"
+        />
       </div>
     </section>
   );
