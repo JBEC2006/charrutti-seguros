@@ -1,9 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { site, pasosSiniestro, pasosSiniestroCompletos } from "@/lib/site";
-import { animarAlto } from "@/lib/movimiento";
+import { animarAltoDesde, SALIDA } from "@/lib/movimiento";
+
+/* useLayoutEffect corre antes de que el navegador pinte, que es justo lo que
+   hace falta para plantar el alto de partida sin que se vea un parpadeo. Pero
+   en el render del servidor no existe y React avisa por consola, así que del
+   lado del servidor cae a useEffect, que nunca llega a ejecutarse ahí. */
+const useEfectoDeLayout =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect;
 
 /**
  * El único momento fuerte de la página.
@@ -31,24 +38,49 @@ import { animarAlto } from "@/lib/movimiento";
 export function SiniestroBand() {
   const [verTodos, setVerTodos] = useState(false);
 
-  /* La lista pasa de cuatro ítems a nueve. Sin animar, el bloque de al lado
-     pega un salto de golpe y la página entera se reacomoda de un cuadro al
-     otro: se siente como si algo se hubiera roto, no como que se desplegó.
+  /* El despliegue va en dos fases, y plegar es exactamente la reversa de
+     desplegar:
 
-     animarAlto mide el alto real y lo transiciona, porque `height: auto` no
-     es animable. Ver lib/movimiento.ts. */
+       1. SALE la lista que está. Los ítems se apagan y bajan 6px, del último
+          al primero. Dura SALIDA ms.
+       2. Se cambia el contenido, la caja ajusta el alto con transición, y
+          ENTRA la lista nueva escalonada del primero al último.
+
+     Las dos fases corren igual en las dos direcciones. Por eso cerrar se
+     siente como desandar y no como un segundo despliegue más chico, que es
+     lo que pasaba antes. */
+  const [saliendo, setSaliendo] = useState(false);
   const caja = useRef<HTMLDivElement>(null);
-  const primeraVez = useRef(true);
 
-  useEffect(() => {
-    // En el primer render no hay nada que animar: es el estado inicial.
-    if (primeraVez.current) {
-      primeraVez.current = false;
-      return;
-    }
-    if (!caja.current) return;
-    return animarAlto(caja.current, true);
+  /* El alto de partida se captura al hacer clic, ANTES de que React cambie el
+     contenido. Después ya es tarde: el DOM tiene la lista nueva y medirlo
+     daría el alto de destino, no el de origen. */
+  const altoDePartida = useRef<number | null>(null);
+  const temporizador = useRef<number | undefined>(undefined);
+
+  useEffect(() => () => window.clearTimeout(temporizador.current), []);
+
+  function alternar() {
+    // Si ya hay una transición en curso, no se encima otra.
+    if (saliendo) return;
+
+    altoDePartida.current = caja.current?.getBoundingClientRect().height ?? null;
+    setSaliendo(true);
+
+    temporizador.current = window.setTimeout(() => {
+      setVerTodos((v) => !v);
+      setSaliendo(false);
+    }, SALIDA);
+  }
+
+  useEfectoDeLayout(() => {
+    if (altoDePartida.current === null || !caja.current) return;
+    const limpiar = animarAltoDesde(caja.current, altoDePartida.current);
+    altoDePartida.current = null;
+    return limpiar;
   }, [verTodos]);
+
+  const pasos = verTodos ? pasosSiniestroCompletos : pasosSiniestro;
 
   return (
     <section
@@ -97,15 +129,27 @@ export function SiniestroBand() {
 
           {/* El ref va acá, en el contenedor: es lo que se mide y se anima.
               La `key` cambia con el estado para que React rearme la lista y el
-              escalonado de los ítems vuelva a correr en cada despliegue. */}
+              escalonado vuelva a correr en cada despliegue.
+
+              Las dos listas comparten una sola pieza de marcado: la única
+              diferencia real es que la completa va numerada y la corta lleva
+              viñeta, porque son cuatro pasos sueltos y no una secuencia. */}
           <div ref={caja}>
             {verTodos ? (
               /* La lista real de /siniestro.html, completa y en su orden. */
-              <ol key="todos" className="escalonado mt-4">
-                {pasosSiniestroCompletos.map((paso, i) => (
+              <ol
+                key="todos"
+                className={saliendo ? "escalonado-sale mt-4" : "escalonado mt-4"}
+              >
+                {pasos.map((paso, i) => (
                   <li
                     key={paso}
-                    style={{ "--i": i } as React.CSSProperties}
+                    style={
+                      {
+                        "--i": i,
+                        "--salida": pasos.length - 1 - i,
+                      } as React.CSSProperties
+                    }
                     className="flex gap-4 border-t border-white/20 py-3 last:border-b"
                   >
                     <span className="shrink-0 font-display text-lg tabular-nums text-naranja">
@@ -119,11 +163,19 @@ export function SiniestroBand() {
               /* Lo esencial de los primeros minutos, sin numerar: son los pasos
                  1, 4, 7 y 9 de la lista de arriba, y numerarlos 1-2-3-4 haría
                  parecer que la secuencia completa es de cuatro. */
-              <ul key="esencial" className="escalonado mt-4">
-                {pasosSiniestro.map((paso, i) => (
+              <ul
+                key="esencial"
+                className={saliendo ? "escalonado-sale mt-4" : "escalonado mt-4"}
+              >
+                {pasos.map((paso, i) => (
                   <li
                     key={paso}
-                    style={{ "--i": i } as React.CSSProperties}
+                    style={
+                      {
+                        "--i": i,
+                        "--salida": pasos.length - 1 - i,
+                      } as React.CSSProperties
+                    }
                     className="flex gap-4 border-t border-white/20 py-3.5 last:border-b"
                   >
                     <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 bg-naranja" />
@@ -137,7 +189,7 @@ export function SiniestroBand() {
           <div className="mt-5 flex flex-wrap items-center gap-x-7 gap-y-3">
             <button
               type="button"
-              onClick={() => setVerTodos((v) => !v)}
+              onClick={alternar}
               aria-expanded={verTodos}
               className="font-display text-[0.9375rem] font-medium underline decoration-naranja decoration-2 underline-offset-4 hover:decoration-white"
             >

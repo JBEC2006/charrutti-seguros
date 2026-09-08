@@ -110,40 +110,57 @@ export function scrollSuaveA(
   cuadro = requestAnimationFrame(paso);
 }
 
+/** Cuánto tarda la lista vieja en irse antes de que entre la nueva. */
+export const SALIDA = 200;
+
 /**
- * Anima el alto de un bloque que se despliega o se pliega.
+ * Anima el alto de un bloque entre dos estados, en las dos direcciones.
  *
  * El problema de siempre: `height: auto` no se puede transicionar, así que hay
- * que medir el alto real y animar hacia ese número. Acá se mide, se anima, y
- * al terminar se devuelve a `auto` para que el bloque siga siendo elástico si
- * cambia la pantalla o el texto.
+ * que medir el alto real y animar hacia ese número.
  *
- * Devuelve una función de limpieza para el useEffect que lo llame.
+ * POR QUÉ RECIBE `desde` Y NO LO MIDE SOLO
+ * ----------------------------------------
+ * La primera versión arrancaba siempre en 0px. Abrir se veía bien, pero cerrar
+ * quedaba mal: la caja saltaba a cero y después crecía hasta el alto nuevo, o
+ * sea que plegar no era la reversa de desplegar sino un segundo despliegue más
+ * chico.
+ *
+ * El alto de partida hay que capturarlo ANTES de que React cambie el
+ * contenido —después ya es tarde, el DOM tiene lo nuevo—, así que lo pasa
+ * quien llama.
+ *
+ * Devuelve una función de limpieza para el efecto que lo use.
  */
-export function animarAlto(
+export function animarAltoDesde(
   caja: HTMLElement,
-  abierto: boolean,
-  duracion = 340,
+  desde: number,
+  duracion = 320,
 ) {
-  const alto = caja.scrollHeight;
+  const hasta = caja.scrollHeight;
+  if (Math.abs(hasta - desde) < 2) return () => {};
 
   caja.style.overflow = "hidden";
-  caja.style.transition = `height ${duracion}ms ${CURVA}`;
-  caja.style.height = abierto ? "0px" : `${alto}px`;
+
+  /* `transition: none` para plantar el alto de partida. Sin esto el navegador
+     animaría también ese primer salto y el recorrido saldría al revés. */
+  caja.style.transition = "none";
+  caja.style.height = `${desde}px`;
 
   // Forzar un reflow: sin esto el navegador junta los dos valores en uno solo
   // y no hay transición, solo un salto.
   void caja.offsetHeight;
 
-  caja.style.height = abierto ? `${alto}px` : "0px";
+  caja.style.transition = `height ${duracion}ms ${CURVA}`;
+  caja.style.height = `${hasta}px`;
 
-  const alTerminar = () => {
-    // De vuelta a auto: el bloque tiene que poder crecer solo después.
-    caja.style.height = abierto ? "auto" : "0px";
-    caja.style.overflow = abierto ? "" : "hidden";
+  const t = window.setTimeout(() => {
+    // De vuelta a auto: el bloque tiene que poder crecer solo si cambia el
+    // ancho de la pantalla y el texto pasa a ocupar más líneas.
+    caja.style.height = "auto";
+    caja.style.overflow = "";
     caja.style.transition = "";
-  };
+  }, duracion);
 
-  const t = window.setTimeout(alTerminar, duracion);
   return () => window.clearTimeout(t);
 }

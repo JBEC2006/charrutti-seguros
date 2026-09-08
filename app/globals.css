@@ -356,6 +356,44 @@
 }
 
 /* ---------------------------------------------------------------------------
+   SALIDA: la reversa exacta de la entrada.
+
+   Plegar una lista no es "que desaparezca": es desandar lo que pasó al
+   desplegarla. Por eso la salida invierte las tres cosas de la entrada.
+
+     entra                          sale
+     ─────                          ────
+     sube 6px y se funde            baja 6px y se apaga
+     del primero al último          del último al primero
+     300ms                          190ms
+
+   La salida es más rápida a propósito. Lo que uno ya leyó no necesita tiempo
+   de lectura: si tarda lo mismo que la entrada, se siente lenta. Es la regla
+   de siempre —entrar despacio, salir rápido— y es la diferencia entre una
+   animación que ayuda y una que hace esperar.
+
+   El orden inverso lo da --salida, que el componente calcula como
+   (total - 1 - i). Es lo que hace que la lista se "enrolle" hacia arriba en
+   vez de evaporarse entera.
+--------------------------------------------------------------------------- */
+
+@keyframes se-va {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.escalonado-sale > * {
+  animation: se-va 190ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(min(var(--salida, 0), 5) * 16ms);
+}
+
+/* ---------------------------------------------------------------------------
    Desfile de compañías.
 
    Las nueve avanzan de derecha a izquierda en una sola línea. En un teléfono
