@@ -73,7 +73,7 @@ const hecho: Item[] = [
   {
     que: "Accesibilidad",
     detalle:
-      "Foco visible en toda la navegación por teclado, salto al contenido, prefers-reduced-motion respetado y contraste medido para cada combinación de la paleta.",
+      "Foco visible en toda la navegación por teclado, salto al contenido, contraste medido para cada combinación de la paleta, y control de pausa en el desfile de compañías, que es lo único que se mueve solo de forma continua.",
   },
   {
     que: "Bloqueo a buscadores",

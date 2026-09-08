@@ -218,28 +218,48 @@
   animation-delay: 1180ms;
 }
 
+/* ---------------------------------------------------------------------------
+   MOVIMIENTO Y prefers-reduced-motion: QUÉ SE RESPETA Y QUÉ NO.
+
+   Antes esta hoja apagaba TODO el movimiento cuando el sistema operativo pedía
+   animaciones reducidas: la hoja del hero, el desfile de compañías y, por una
+   regla comodín sobre *, hasta las transiciones de color de 200ms.
+
+   El efecto práctico era que dos personas abrían el mismo sitio y veían cosas
+   distintas sin entender por qué, porque casi nadie sabe que tiene esa opción
+   prendida en Windows. Y en una demo que se presenta en vivo, eso es un
+   problema real.
+
+   La decisión que se tomó, con el criterio detrás de cada caso:
+
+   1. LA HOJA COMPARATIVA DEL HERO: se anima siempre.
+      Dura 1460ms, corre UNA vez y no vuelve a moverse. WCAG 2.2.2 ("Pause,
+      Stop, Hide", nivel A) exime explícitamente lo que dura menos de cinco
+      segundos, así que no necesita control de pausa. Los recorridos son de
+      5px y un trazo de lapicera: no hay desplazamiento grande ni parpadeo.
+      Además es el gesto que explica el negocio —comparar y marcar cuál
+      conviene— así que perderlo es perder el argumento.
+
+   2. EL DESFILE DE COMPAÑÍAS: se anima siempre, PERO lleva botón de pausa.
+      Este sí es movimiento continuo e infinito, que es la categoría que de
+      verdad molesta a quien tiene un trastorno vestibular. Como no se apaga
+      solo, WCAG 2.2.2 exige un mecanismo para detenerlo, y ahí el hover no
+      alcanza: en un celular no existe, y focus-within tampoco servía porque
+      las nueve marcas son texto plano, sin nada enfocable.
+      Por eso hay un <button> real en components/Companias.tsx. Sin ese botón
+      esta decisión incumpliría un criterio de nivel A. NO SACAR EL BOTÓN.
+
+   3. EL SCROLL SUAVE: se sigue respetando.
+      Un salto largo con scroll animado recorre la pantalla entera y es de lo
+      que más marea. No aporta nada al pitch y se apaga sin costo.
+
+   Las transiciones de hover (200ms de color) ya no se tocan: son respuesta a
+   una acción del usuario, no movimiento autónomo, y no desplazan nada.
+--------------------------------------------------------------------------- */
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-
-  .hoja-fila,
-  .hoja-nota {
-    opacity: 1;
-    animation: none;
-  }
-
-  .hoja-circulo {
-    stroke-dashoffset: 0;
-    animation: none;
-  }
-
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
   }
 }
 
@@ -272,28 +292,16 @@
   animation: desfile 38s linear infinite;
 }
 
+/* Se frena al pasar el mouse por encima, para poder leerlas. Es una comodidad,
+   NO el mecanismo de accesibilidad: en un celular no hay hover. El mecanismo
+   es el botón de pausa. */
 .desfile:hover .desfile-pista,
 .desfile:focus-within .desfile-pista {
   animation-play-state: paused;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  /* Sin movimiento, la pista se convierte en una lista centrada que envuelve,
-     y la copia duplicada se oculta para no repetir las compañías. */
-  .desfile-pista {
-    animation: none;
-    width: 100%;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .desfile-pista [data-copia="2"] {
-    display: none;
-  }
-
-  .desfile-pista [data-copia="1"] {
-    flex-wrap: wrap;
-    justify-content: center;
-    padding-right: 0;
-  }
+/* La pausa explícita del botón. Va por atributo y no por :hover para que
+   sobreviva a que el mouse se vaya: si alguien la paró, se queda parada. */
+.desfile[data-pausado="true"] .desfile-pista {
+  animation-play-state: paused;
 }

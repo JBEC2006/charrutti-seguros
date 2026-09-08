@@ -118,9 +118,17 @@ intencional: la demo muestra el patrón, no la funcionalidad.
   crema. Está documentado en `app/globals.css` con las reglas de contraste
   medidas.
 - **El naranja nunca es texto sobre fondo claro** (2.2:1). Es superficie.
-- **Hay un solo momento de movimiento en todo el sitio**: la hoja comparativa
-  del hero, que se arma sola en 1460ms, una vez. Todo lo demás se mueve solo
+- **Hay dos cosas que se mueven solas, y cada una tiene su regla.** La hoja
+  comparativa del hero se arma en 1460ms, una sola vez: dura menos de cinco
+  segundos, así que no necesita control. El desfile de compañías es continuo e
+  infinito, y por eso **lleva un botón de pausa que no hay que sacar** — sin
+  él, el sitio incumpliría WCAG 2.2.2 (nivel A). Todo lo demás se mueve solo
   como respuesta a una acción.
+- **Las dos ignoran `prefers-reduced-motion` a propósito.** Antes lo
+  respetaban, y el efecto era que dos personas abrían el mismo sitio y veían
+  cosas distintas sin saber por qué, porque casi nadie sabe que tiene esa
+  opción prendida en Windows. El razonamiento completo, caso por caso, está en
+  `app/globals.css`. El scroll suave sí se sigue apagando.
 - **Ningún precio, ninguna prima.** Un corredor no puede dar una cotización
   vinculante desde una web. La comparativa del hero usa Compañía A / B / C y
   está rotulada como ejemplo ilustrativo.
